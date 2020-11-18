@@ -1,0 +1,108 @@
+---
+name: ansible-test
+description: >-
+  GitHub Action for checking Ansible Collections
+  with ansible-test
+branding:
+  icon: check-circle
+  color: gray-dark
+inputs:
+  ansible-core-version:
+    description: ansible-core Git revision
+    default: stable-2.10
+    required: true
+  ns:
+    description: Ansible Collection namespace
+    required: true
+  name:
+    description: Ansible Collection name
+    required: true
+  pre-test-cmd:
+    description: Extra command to invoke before ansible-test
+    default:
+  python-version:
+    description: Controller Python version
+    default: 3.9
+  target-python-version:
+    description: Target Python version
+    default:
+  testing-type:
+    description: One of 'sanity', 'units' or 'integration'
+    required: true
+  test-deps:
+    description: Test dependencies to install along with this collection
+    default:
+outputs:
+  checkout-directory: ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+runs:
+  using: composite
+  steps:
+  - name: Check out the collection
+    uses: actions/checkout@v2
+    with:
+      path: >-
+        ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+  - name: Set controller Python to ${{ inputs.python-version }}
+    uses: actions/setup-python@v2
+    with:
+      python-version: ${{ inputs.python-version }}
+  - name: Install ansible-core (${{ inputs.ansible-core-version }})
+    run: >-
+      python -m pip install
+      https://github.com/ansible/ansible/archive/${{
+        inputs.ansible-core-version
+      }}.tar.gz
+      --disable-pip-version-check
+      --user
+  - name: Install collection dependencies
+    if: inputs.test-deps
+    run: >-
+      ~/.local/bin/ansible-galaxy
+      collection install ${{ inputs.test-deps }}
+      -p .
+  - name: Run a pre-test command
+    if: inputs.pre-test-cmd
+    run: ${{ inputs.pre-test-cmd }}
+    working-directory: >-
+      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+  - name: Run ${{ inputs.testing-type }} tests
+    run: >-
+      ~/.local/bin/ansible-test ${{ inputs.testing-type }}
+      -v --color --docker
+      ${{
+          inputs.testing-type != 'sanity'
+          && '--coverage'
+          || ''
+      }}
+      ${{
+          inputs.testing-type == 'integration'
+          && '--retry-on-error --continue-on-error --diff'
+          || ''
+      }}
+      ${{
+          inputs.target-python-version
+          && format('--python {0}', inputs.target-python-version)
+          || ''
+      }}
+    working-directory: >-
+      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+  - name: Generate coverage report
+    if: >-
+      inputs.testing-type != 'sanity'
+    run: >-
+      ~/.local/bin/ansible-test coverage xml
+      -v --requirements
+      --group-by command
+      --group-by version
+    working-directory: >-
+      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+  # FIXME: generate https://codecov.io/gh/GITHUBORG/REPONAME in the name
+  - name: Send the coverage data over to codecov.io
+    if: >-
+      inputs.testing-type != 'sanity'
+    uses: codecov/codecov-action@v1
+    with:
+      fail_ci_if_error: false
+    working-directory: >-
+      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+...
