@@ -46,15 +46,23 @@ outputs:
     description: >-
       Path to the auto-downloaded  # `${{ inputs.ns }}.${{ inputs.name }}`
       collection src directory
-    value: ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    # value: ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    value: ${{ steps.collection-checkout-dir.outputs.path }}
 runs:
   using: composite
   steps:
+  - name: Construct the collection source checkout directory path
+    id: collection-checkout-dir
+    run: >-
+      echo
+      ::set-output
+      name=path::ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    shell: bash
+
   - name: Check out the collection
     uses: actions/checkout@v2
     with:
-      path: >-
-        ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+      path: ${{ steps.collection-checkout-dir.outputs.path }}
   - name: Set controller Python to ${{ inputs.python-version }}
     uses: actions/setup-python@v2
     with:
@@ -87,8 +95,7 @@ runs:
           || '>&2 echo Skipping running the pre test command...'
       }}
     shell: bash
-    working-directory: >-
-      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
   - name: Run ${{ inputs.testing-type }} tests
     run: >-
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
@@ -109,8 +116,7 @@ runs:
           || ''
       }}
     shell: bash
-    working-directory: >-
-      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
   - name: Generate coverage report
     # if: >-
     #   inputs.testing-type != 'sanity'
@@ -121,8 +127,7 @@ runs:
           || '~/.local/bin/ansible-test coverage xml -v --requirements --group-by command --group-by version'
       }}
     shell: bash
-    working-directory: >-
-      ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
+    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
   # FIXME: generate https://codecov.io/gh/GITHUBORG/REPONAME in the name
   - name: >-
       Send the coverage data over to
