@@ -44,7 +44,7 @@ outputs:
     value: ~/.local/bin/ansible-test
   checkout-directory:
     description: >-
-      Path to the auto-downloaded  # `${{ inputs.ns }}.${{ inputs.name }}`
+      Path to the auto-downloaded
       collection src directory
     # value: ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
     value: ${{ steps.collection-checkout-dir.outputs.path }}
