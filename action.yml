@@ -69,15 +69,23 @@ runs:
       --user
     shell: bash
   - name: Install collection dependencies
-    if: inputs.test-deps
+    # if: inputs.test-deps
     run: >-
-      ~/.local/bin/ansible-galaxy
-      collection install ${{ inputs.test-deps }}
-      -p .
+      ${{
+          inputs.test-deps
+          && format('~/.local/bin/ansible-galaxy collection install {0} -p .', inputs.test-deps)
+          || '>&2 echo Skipping installing the dependencies...'
+      }}
     shell: bash
   - name: Run a pre-test command
-    if: inputs.pre-test-cmd
-    run: ${{ inputs.pre-test-cmd }}
+    # if: inputs.pre-test-cmd
+    # run: ${{ inputs.pre-test-cmd }}
+    run: >-
+      ${{
+          inputs.pre-test-cmd
+          && inputs.pre-test-cmd
+          || '>&2 echo Skipping running the pre test command...'
+      }}
     shell: bash
     working-directory: >-
       ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
@@ -104,13 +112,14 @@ runs:
     working-directory: >-
       ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
   - name: Generate coverage report
-    if: >-
-      inputs.testing-type != 'sanity'
+    # if: >-
+    #   inputs.testing-type != 'sanity'
     run: >-
-      ~/.local/bin/ansible-test coverage xml
-      -v --requirements
-      --group-by command
-      --group-by version
+      ${{
+          inputs.testing-type == 'sanity'
+          && '>&2 echo Skipping the coverage generation...'
+          || '~/.local/bin/ansible-test coverage xml -v --requirements --group-by command --group-by version'
+      }}
     shell: bash
     working-directory: >-
       ./ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
@@ -118,8 +127,8 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
-    if: >-
-      inputs.testing-type != 'sanity'
+    # if: >-
+    #   inputs.testing-type != 'sanity'
     uses: codecov/codecov-action@v2
     with:
       flags: ${{ inputs.testing-type }}
