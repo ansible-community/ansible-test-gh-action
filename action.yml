@@ -81,10 +81,7 @@ runs:
     run: >-
       ${{
           inputs.test-deps
-          && format(
-            'set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x',
-            inputs.test-deps,
-          )
+          && format('set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x', inputs.test-deps)
           || '>&2 echo Skipping installing the dependencies...'
       }}
     shell: bash
