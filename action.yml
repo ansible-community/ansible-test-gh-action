@@ -69,12 +69,16 @@ runs:
       python-version: ${{ inputs.python-version }}
   - name: Install ansible-core (${{ inputs.ansible-core-version }})
     run: >-
+      set -x
+      ;
       python -m pip install
       https://github.com/ansible/ansible/archive/${{
         inputs.ansible-core-version
       }}.tar.gz
       --disable-pip-version-check
       --user
+      ;
+      set +x
     shell: bash
   - name: Install collection dependencies
     # if: inputs.test-deps
