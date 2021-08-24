@@ -81,7 +81,10 @@ runs:
     run: >-
       ${{
           inputs.test-deps
-          && format('~/.local/bin/ansible-galaxy collection install {0} -p .', inputs.test-deps)
+          && format(
+            'set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x',
+            inputs.test-deps,
+          )
           || '>&2 echo Skipping installing the dependencies...'
       }}
     shell: bash
@@ -91,13 +94,15 @@ runs:
     run: >-
       ${{
           inputs.pre-test-cmd
-          && inputs.pre-test-cmd
+          && format('set -x; {0}; set +x', inputs.pre-test-cmd)
           || '>&2 echo Skipping running the pre test command...'
       }}
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
   - name: Run ${{ inputs.testing-type }} tests
     run: >-
+      set -x
+      ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
       -v --color --docker
       ${{
@@ -115,6 +120,8 @@ runs:
           && format('--python {0}', inputs.target-python-version)
           || ''
       }}
+      ;
+      set +x
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
   - name: Generate coverage report
@@ -124,7 +131,7 @@ runs:
       ${{
           inputs.testing-type == 'sanity'
           && '>&2 echo Skipping the coverage generation...'
-          || '~/.local/bin/ansible-test coverage xml -v --requirements --group-by command --group-by version'
+          || 'set -x; ~/.local/bin/ansible-test coverage xml -v --requirements --group-by command --group-by version; set +x'
       }}
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
