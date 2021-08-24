@@ -59,14 +59,40 @@ runs:
       name=path::ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
     shell: bash
 
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Checking out
+      "'${{ inputs.ns }}.${{ inputs.name }}'" collection
+      into ${{ steps.collection-checkout-dir.outputs.path }}...
+    shell: bash
   - name: Check out the collection
     uses: actions/checkout@v2
     with:
       path: ${{ steps.collection-checkout-dir.outputs.path }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Setting controller Python
+      to ${{ inputs.python-version }}...
+    shell: bash
   - name: Set controller Python to ${{ inputs.python-version }}
     uses: actions/setup-python@v2
     with:
       python-version: ${{ inputs.python-version }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Installing ansible-core
+      version ${{ inputs.ansible-core-version }}...
+    shell: bash
   - name: Install ansible-core (${{ inputs.ansible-core-version }})
     run: >-
       set -x
@@ -80,6 +106,16 @@ runs:
       ;
       set +x
     shell: bash
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Installing collection
+      dependencies: ${{ inputs.test-deps }}
+    shell: bash
   - name: Install collection dependencies
     # if: inputs.test-deps
     run: >-
@@ -88,6 +124,16 @@ runs:
           && format('set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x', inputs.test-deps)
           || '>&2 echo Skipping installing the dependencies...'
       }}
+    shell: bash
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Running a pre-test
+      command: "'${{ inputs.pre-test-cmd }}'"
     shell: bash
   - name: Run a pre-test command
     # if: inputs.pre-test-cmd
@@ -100,6 +146,15 @@ runs:
       }}
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Running ${{ inputs.testing-type }} tests...
+    shell: bash
   - name: Run ${{ inputs.testing-type }} tests
     run: >-
       set -x
@@ -125,6 +180,15 @@ runs:
       set +x
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Generating a coverage report...
+    shell: bash
   - name: Generate coverage report
     # if: >-
     #   inputs.testing-type != 'sanity'
@@ -136,7 +200,16 @@ runs:
       }}
     shell: bash
     working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
-  # FIXME: generate https://codecov.io/gh/GITHUBORG/REPONAME in the name
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Sending the coverage data over to
+      https://codecov.io/gh/${{ github.repository }}...
+    shell: bash
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
@@ -145,4 +218,8 @@ runs:
     uses: codecov/codecov-action@v2
     with:
       flags: ${{ inputs.testing-type }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
 ...
