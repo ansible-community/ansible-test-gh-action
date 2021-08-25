@@ -94,6 +94,8 @@ runs:
     shell: bash
   - name: Check out the collection
     uses: actions/checkout@v2
+    env:
+      GITHUB_WORKSPACE: ${{ github.action_path }}
     with:
       path: ${{ github.action_path }}/.tmp-ansible-collection-checkout
   - name: Close an expandable block of code
