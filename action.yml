@@ -14,12 +14,6 @@ inputs:
       ideas.
     default: stable-2.11
     required: true
-  ns:
-    description: Ansible Collection namespace
-    required: true
-  name:
-    description: Ansible Collection name
-    required: true
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
     default:
@@ -46,19 +40,19 @@ outputs:
     description: >-
       Path to the auto-downloaded
       collection src directory
-    # value: ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
-    value: ${{ steps.collection-checkout-dir.outputs.path }}
+    value: ${{ steps.collection-metadata.outputs.checkout-path }}
+  collection-fqcn:
+    description: Detected collection FQCN
+    value: ${{ steps.collection-metadata.outputs.fqcn }}
+  collection-name:
+    description: Detected collection FQCN
+    value: ${{ steps.collection-metadata.outputs.name }}
+  collection-namespace:
+    description: Detected collection FQCN
+    value: ${{ steps.collection-metadata.outputs.namespace }}
 runs:
   using: composite
   steps:
-  - name: Construct the collection source checkout directory path
-    id: collection-checkout-dir
-    run: >-
-      echo
-      ::set-output
-      name=path::ansible_collections/${{ inputs.ns }}/${{ inputs.name }}
-    shell: bash
-
   - name: Open an expandable block of code
     run: >-
       echo ::group::Setting controller Python
@@ -75,14 +69,90 @@ runs:
 
   - name: Open an expandable block of code
     run: >-
-      echo ::group::Checking out
-      "'${{ inputs.ns }}.${{ inputs.name }}'" collection
-      into ${{ steps.collection-checkout-dir.outputs.path }}...
+      echo ::group::Install Python YAML library
+    shell: bash
+  - name: Install PyYAML
+    run: >-
+      set -x
+      ;
+      python -m
+      pip install
+      PyYAML
+      --disable-pip-version-check
+      --user
+      ;
+      set +x
+    shell: bash
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Checking out the repository into a temporary location...
     shell: bash
   - name: Check out the collection
     uses: actions/checkout@v2
     with:
-      path: ${{ steps.collection-checkout-dir.outputs.path }}
+      path: ${{ github.action_path }}/.tmp-ansible-collection-checkout
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Extracting the collection metadata from "'galaxy.yml'"...
+    shell: bash
+  - name: Extract the collection metadata
+    id: collection-metadata
+    run: |
+      import yaml
+
+      COLLECTION_META_FILE = 'galaxy.yml'
+      with open(COLLECTION_META_FILE) as galaxy_yml:
+          collection_meta = yaml.load(galaxy_yml)
+
+      coll_name = collection_meta['name']
+      coll_ns = collection_meta['namespace']
+
+      print('::set-output name=name::{name}'.format(name=coll_name))
+      print('::set-output name=namespace::{ns}'.format(ns=coll_ns))
+
+      print(
+          '::set-output name=fqcn::{ns}.{name}'.
+          format(name=coll_name, ns=coll_ns)
+      )
+      print(
+          '::set-output name=checkout-path::ansible_collections/{ns}/{name}'.
+          format(name=coll_name, ns=coll_ns)
+      )
+    shell: python
+    working-directory: ${{ github.action_path }}/.tmp-ansible-collection-checkout
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
+      echo ::group::Move "'${{ steps.collection-metadata.outputs.fqcn }}'"
+      collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
+    shell: bash
+  - name: Install ansible-core (${{ inputs.ansible-core-version }})
+    run: >-
+      set -x
+      ;
+      mkdir -pv
+      "${{ steps.collection-metadata.outputs.checkout-path }}/.."
+      ;
+      mv -v
+      "${{ github.action_path }}/.tmp-ansible-collection-checkout"
+      "${{ steps.collection-metadata.outputs.checkout-path }}"
+      ;
+      set +x
+    shell: bash
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -145,7 +215,7 @@ runs:
           || '>&2 echo Skipping running the pre test command...'
       }}
     shell: bash
-    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -179,7 +249,7 @@ runs:
       ;
       set +x
     shell: bash
-    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -199,7 +269,7 @@ runs:
           || 'set -x; ~/.local/bin/ansible-test coverage xml -v --requirements --group-by command --group-by version; set +x'
       }}
     shell: bash
-    working-directory: ${{ steps.collection-checkout-dir.outputs.path }}
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
