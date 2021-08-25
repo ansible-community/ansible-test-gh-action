@@ -125,6 +125,11 @@ runs:
           format(name=coll_name, ns=coll_ns)
       )
       print(
+          '::set-output '
+          'name=collection-namespace-path::ansible_collections/{ns}'.
+          format(ns=coll_ns)
+      )
+      print(
           '::set-output name=checkout-path::ansible_collections/{ns}/{name}'.
           format(name=coll_name, ns=coll_ns)
       )
@@ -145,7 +150,7 @@ runs:
       set -x
       ;
       mkdir -pv
-      "${{ steps.collection-metadata.outputs.checkout-path }}/.."
+      "${{ steps.collection-metadata.outputs.collection-namespace-path }}"
       ;
       mv -v
       ".tmp-ansible-collection-checkout"
