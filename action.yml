@@ -61,6 +61,20 @@ runs:
 
   - name: Open an expandable block of code
     run: >-
+      echo ::group::Setting controller Python
+      to ${{ inputs.python-version }}...
+    shell: bash
+  - name: Set controller Python to ${{ inputs.python-version }}
+    uses: actions/setup-python@v2
+    with:
+      python-version: ${{ inputs.python-version }}
+  - name: Close an expandable block of code
+    run: >-
+      echo ::endgroup::
+    shell: bash
+
+  - name: Open an expandable block of code
+    run: >-
       echo ::group::Checking out
       "'${{ inputs.ns }}.${{ inputs.name }}'" collection
       into ${{ steps.collection-checkout-dir.outputs.path }}...
@@ -69,20 +83,6 @@ runs:
     uses: actions/checkout@v2
     with:
       path: ${{ steps.collection-checkout-dir.outputs.path }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
-
-  - name: Open an expandable block of code
-    run: >-
-      echo ::group::Setting controller Python
-      to ${{ inputs.python-version }}...
-    shell: bash
-  - name: Set controller Python to ${{ inputs.python-version }}
-    uses: actions/setup-python@v2
-    with:
-      python-version: ${{ inputs.python-version }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
