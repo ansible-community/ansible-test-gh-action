@@ -94,10 +94,8 @@ runs:
     shell: bash
   - name: Check out the collection
     uses: actions/checkout@v2
-    env:
-      GITHUB_WORKSPACE: ${{ github.action_path }}
     with:
-      path: ${{ github.action_path }}/.tmp-ansible-collection-checkout
+      path: .tmp-ansible-collection-checkout
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -131,7 +129,7 @@ runs:
           format(name=coll_name, ns=coll_ns)
       )
     shell: python
-    working-directory: ${{ github.action_path }}/.tmp-ansible-collection-checkout
+    working-directory: .tmp-ansible-collection-checkout
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -150,7 +148,7 @@ runs:
       "${{ steps.collection-metadata.outputs.checkout-path }}/.."
       ;
       mv -v
-      "${{ github.action_path }}/.tmp-ansible-collection-checkout"
+      ".tmp-ansible-collection-checkout"
       "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
       set +x
