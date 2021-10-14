@@ -77,7 +77,7 @@ runs:
       ;
       python -m
       pip install
-      PyYAML
+      'PyYAML>5,<6'
       --disable-pip-version-check
       --user
       ;
