@@ -16,7 +16,7 @@ inputs:
     required: true
   git-checkout-ref:
     description: Committish to check out
-    default: HEAD
+    default:
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
     default:
