@@ -14,6 +14,9 @@ inputs:
       ideas.
     default: stable-2.11
     required: true
+  git-checkout-ref:
+    description: Committish to check out
+    default: HEAD
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
     default:
@@ -96,6 +99,7 @@ runs:
     uses: actions/checkout@v2
     with:
       path: .tmp-ansible-collection-checkout
+      ref: ${{ inputs.git-checkout-ref }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
