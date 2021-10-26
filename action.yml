@@ -99,6 +99,7 @@ runs:
     uses: actions/checkout@v2
     with:
       path: .tmp-ansible-collection-checkout
+      persist-credentials: false
       ref: ${{ inputs.git-checkout-ref }}
   - name: Close an expandable block of code
     run: >-
