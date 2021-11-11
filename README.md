@@ -63,6 +63,11 @@ Extra command to invoke before ansible-test **(OPTIONAL)**
 Controller Python version **(DEFAULT: `3.9`)**
 
 
+### `target`
+
+ansible-test TARGET **(OPTIONAL)**
+
+
 ### `target-python-version`
 
 Target Python version **(OPTIONAL)**

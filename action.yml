@@ -23,6 +23,9 @@ inputs:
   python-version:
     description: Controller Python version
     default: 3.9
+  target:
+    description: ansible-test TARGET
+    default:
   target-python-version:
     description: Target Python version
     default:
@@ -252,6 +255,7 @@ runs:
           && format('--python {0}', inputs.target-python-version)
           || ''
       }}
+      ${{ inputs.target }}
       ;
       set +x
     shell: bash
