@@ -55,7 +55,7 @@ ideas **(DEFAULT: `stable-2.11`)**
 
 ### `docker-image`
 
-docker image invoked by ansible-test **(OPTIONAL)**
+A container image spawned by `ansible-test` **(OPTIONAL)**
 
 
 ### `pre-test-cmd`
