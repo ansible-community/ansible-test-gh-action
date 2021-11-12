@@ -65,7 +65,7 @@ Controller Python version **(DEFAULT: `3.9`)**
 
 ### `target`
 
-ansible-test TARGET **(OPTIONAL)**
+`ansible-test` TARGET **(OPTIONAL)**
 
 
 ### `target-python-version`
