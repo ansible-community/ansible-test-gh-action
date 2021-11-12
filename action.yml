@@ -243,7 +243,8 @@ runs:
       set -x
       ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
-      -v --color --docker ${{ inputs.docker-image }}
+      -v --color
+      --docker ${{ inputs.docker-image }}
       --coverage
       ${{
           inputs.testing-type == 'integration'
