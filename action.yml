@@ -14,6 +14,9 @@ inputs:
       ideas.
     default: stable-2.11
     required: true
+  docker-image:
+    description: Docker image used by ansible-test
+    default:
   git-checkout-ref:
     description: Committish to check out
     default:
@@ -23,6 +26,9 @@ inputs:
   python-version:
     description: Controller Python version
     default: 3.9
+  target:
+    description: ansible-test TARGET
+    default:
   target-python-version:
     description: Target Python version
     default:
@@ -240,7 +246,8 @@ runs:
       set -x
       ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
-      -v --color --docker
+      -v --color
+      --docker ${{ inputs.docker-image }}
       --coverage
       ${{
           inputs.testing-type == 'integration'
@@ -252,6 +259,8 @@ runs:
           && format('--python {0}', inputs.target-python-version)
           || ''
       }}
+      --
+      ${{ inputs.target }}
       ;
       set +x
     shell: bash
