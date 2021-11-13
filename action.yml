@@ -255,6 +255,7 @@ runs:
           && format('--python {0}', inputs.target-python-version)
           || ''
       }}
+      --
       ${{ inputs.target }}
       ;
       set +x
