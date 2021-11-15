@@ -242,6 +242,13 @@ runs:
       echo ::group::Running ${{ inputs.testing-type }} tests...
     shell: bash
   - name: Run ${{ inputs.testing-type }} tests
+    # NOTE: Theoretically, it's best to have a `--` separator before the
+    # NOTE: targets list but unfortunately, it causes problem with the
+    # NOTE: arguments bypass when run with `--docker` so for now, it's
+    # NOTE: not included in the command.
+    # Refs:
+    # * https://github.com/ansible-community/ansible-test-gh-action/pull/9#discussion_r748488366
+    # * https://github.com/ansible-community/ansible-test-gh-action/issues/8#issuecomment-968505014
     run: >-
       set -x
       ;
@@ -259,7 +266,6 @@ runs:
           && format('--python {0}', inputs.target-python-version)
           || ''
       }}
-      --
       ${{ inputs.target }}
       ;
       set +x
