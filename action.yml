@@ -160,15 +160,15 @@ runs:
     run: >-
       set -x
       ;
+      rm -rf 
+      "${{ steps.collection-metadata.outputs.checkout-path }}"
+      ;
       mkdir -pv
       "${{ steps.collection-metadata.outputs.collection-namespace-path }}"
       ;
-      rsync -a
-      ".tmp-ansible-collection-checkout/."
-      "${{ steps.collection-metadata.outputs.checkout-path }}/."
-      ;
-      rm -rf
+      mv -v
       ".tmp-ansible-collection-checkout"
+      "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
       set +x
     shell: bash
