@@ -87,3 +87,13 @@ or 'integration')**
 ### `test-deps`
 
 Test dependencies to install along with this collection **(OPTIONAL)**
+
+## Related community projects
+
+Check out the [Data-Bene/ansible-test-versions-gh-action] to explore
+a semi-automatic job matrix generation for testing your collections. This
+project is not maintained by us but it is a rather promising way of
+configring your GitHub Actions CI/CD workflows.
+
+[Data-Bene/ansible-test-versions-gh-action]:
+https://github.com/Data-Bene/ansible-test-versions-gh-action
