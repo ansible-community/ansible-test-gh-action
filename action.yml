@@ -175,7 +175,7 @@ runs:
       echo ::group::Move "'${{ steps.collection-metadata.outputs.fqcn }}'"
       collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
     shell: bash
-  - name: Install ansible-core (${{ inputs.ansible-core-version }})
+  - name: Move collection to test directory
     run: >-
       set -x
       ;
