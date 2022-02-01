@@ -26,6 +26,9 @@ inputs:
   python-version:
     description: Controller Python version
     default: 3.9
+  tags:
+    description: Only run plays and tasks with tag values (comma-separated, integration test only)
+    default:
   target:
     description: ansible-test TARGET
     default:
@@ -259,6 +262,16 @@ runs:
       ${{
           inputs.testing-type == 'integration'
           && '--retry-on-error --continue-on-error --diff'
+          || ''
+      }}
+      ${{
+          inputs.testing-type == 'integration' && inputs.tags
+          && format('--tags {0}', inputs.tags)
+          || ''
+      }}
+      ${{
+          inputs.testing-type == 'integration' && inputs.skip-tags
+          && format('--skip-tags {0}', inputs.skip-tags)
           || ''
       }}
       ${{

@@ -67,6 +67,13 @@ Extra command to invoke before ansible-test **(OPTIONAL)**
 
 Controller Python version **(DEFAULT: `3.9`)**
 
+### `skip-tags`
+
+Skip plays and tasks with tag values (comma-separated, integration test only)
+
+### `tags`
+
+Only run plays and tasks with tag values (comma-separated, integration test only)
 
 ### `target`
 
