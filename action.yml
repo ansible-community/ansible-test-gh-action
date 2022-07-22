@@ -305,7 +305,7 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
-    uses: codecov/codecov-action@v2
+    uses: codecov/codecov-action@v3
     with:
       flags: ${{ inputs.testing-type }}
   - name: Close an expandable block of code
