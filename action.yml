@@ -102,7 +102,7 @@ runs:
       echo ::group::Checking out the repository into a temporary location...
     shell: bash
   - name: Check out the collection
-    uses: actions/checkout@v2
+    uses: actions/checkout@v3
     with:
       path: .tmp-ansible-collection-checkout
       persist-credentials: false
