@@ -68,7 +68,7 @@ runs:
       to ${{ inputs.python-version }}...
     shell: bash
   - name: Set controller Python to ${{ inputs.python-version }}
-    uses: actions/setup-python@v2
+    uses: actions/setup-python@v4
     with:
       python-version: ${{ inputs.python-version }}
   - name: Close an expandable block of code
