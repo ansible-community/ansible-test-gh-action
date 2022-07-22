@@ -12,7 +12,7 @@ inputs:
       `ansible-core` Git revision. See https://github.com/ansible/ansible/tags
       and https://github.com/ansible/ansible/branches/all?query=stable- for
       ideas.
-    default: stable-2.11
+    default: stable-2.13
     required: true
   docker-image:
     description: Docker image used by ansible-test
