@@ -44,9 +44,17 @@ inputs:
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
     default:
+  job-python-version:
+    description: >-
+      Environment Python version. The value `auto` uses the maximum Python
+      version supported by the given `ansible-core-version`.
+    default: auto
   python-version:
-    description: Controller Python version
-    default: 3.9
+    description: >-
+      **(DEPRECATED)** Use `job-python-version` instead. This is only kept for
+      backwards compatibility.
+    deprecationMessage: Replace `python-version` with `job-python-version`.
+    default:
   target:
     description: ansible-test TARGET
     default:
@@ -84,14 +92,45 @@ runs:
   using: composite
   steps:
   - name: Log the next step action
+    run: echo ▷ Figuring out the environment Python version...
+    shell: bash
+  - name: Compute job Python version
+    id: compute-job-python-version
+    run: |
+      ENV_PYTHON_VERSION="${{ inputs.job-python-version }}"
+      if [ "${{ inputs.python-version }}" != "" ]; then
+        ENV_PYTHON_VERSION="${{ inputs.python-version }}"
+      elif [ "${ENV_PYTHON_VERSION}" == "auto" ]; then
+        # Determine maximal Python version supported by the
+        # given ansible-core version.
+        case "${{ inputs.ansible-core-version }}" in
+          stable-2.9)
+            ENV_PYTHON_VERSION="3.8"
+            ;;
+          stable-2.10 | stable-2.11)
+            ENV_PYTHON_VERSION="3.9"
+            ;;
+          stable-2.12 | stable-2.13)
+            ENV_PYTHON_VERSION="3.10"
+            ;;
+          *)
+            # For any non-stable branch, we assume the latest version
+            # supported by 'devel':
+            ENV_PYTHON_VERSION="3.10"
+            ;;
+        esac
+      fi
+      echo "::set-output name=job-python-version::${ENV_PYTHON_VERSION}"
+    shell: bash
+  - name: Log the next step action
     run: >-
       echo ▷ Setting controller Python
-      to ${{ inputs.python-version }}...
+      to ${{ inputs.job-python-version }}...
     shell: bash
-  - name: Set controller Python to ${{ inputs.python-version }}
+  - name: Set controller Python to ${{ steps.compute-job-python-version.outputs.job-python-version }}
     uses: actions/setup-python@v4
     with:
-      python-version: ${{ inputs.python-version }}
+      python-version: ${{ steps.compute-job-python-version.outputs.job-python-version }}
 
   - name: Log the next step action
     run: >-

@@ -18,7 +18,6 @@ To use the action add the following step to your workflow file (e.g.
   with:
     ansible-core-version: stable-2.13
     pre-test-cmd: echo This runs before the ansible-test invocation
-    python-version: 3.9
     target-python-version: 3.9
     controller-python-version: auto
     testing-type: integration
@@ -33,7 +32,6 @@ To use the action add the following step to your workflow file (e.g.
   with:
     ansible-core-version: stable-2.13
     pre-test-cmd: echo This runs before the ansible-test invocation
-    python-version: 3.9
     target-python-version: 3.9
     testing-type: units
     test-deps: >-
@@ -95,6 +93,12 @@ Committish to check out, unused if `collection-src-directory`
 is set **(OPTIONAL)**
 
 
+### `job-python-version`
+
+Environment Python version. The value `auto` uses the maximum Python
+version supported by the given `ansible-core-version` **(DEFAULT: `auto`)**
+
+
 ### `pre-test-cmd`
 
 Extra command to invoke before ansible-test **(OPTIONAL)**
@@ -102,7 +106,7 @@ Extra command to invoke before ansible-test **(OPTIONAL)**
 
 ### `python-version`
 
-Controller Python version **(DEFAULT: `3.9`)**
+**(DEPRECATED)** Use `job-python-version` instead.
 
 
 ### `target`
