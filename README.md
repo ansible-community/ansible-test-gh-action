@@ -20,6 +20,7 @@ To use the action add the following step to your workflow file (e.g.
     pre-test-cmd: echo This runs before the ansible-test invocation
     python-version: 3.9
     target-python-version: 3.9
+    controller-python-version: auto
     testing-type: integration
     test-deps: ansible.netcommon
 - name: Perform sanity testing with ansible-test
@@ -61,6 +62,13 @@ ideas. The repository this refers to can be changed with the
 
 The GitHub repository slug from which to check out ansible-core
 **(DEFAULT: `ansible/ansible`)**
+
+
+### `controller-python-version`
+
+Controller Python version. This is only used for integration tests and
+ansible-core 2.12 or later when `target-python-version` is also specified
+**(DEFAULT: `auto`)**
 
 
 ### `collection-root`
