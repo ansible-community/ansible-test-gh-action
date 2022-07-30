@@ -1,0 +1,61 @@
+---
+name: Test ansible-test-gh-action
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    name: Basic tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ansible-core-version: stable-2.12
+            docker-image: default
+            git-checkout-ref:
+            pre-test-cmd:
+            python-version: '3.8'
+            target:
+            target-python-version:
+            testing-type: sanity
+            test-deps:
+          - ansible-core-version: devel
+            docker-image: default
+            git-checkout-ref:
+            pre-test-cmd:
+            python-version: '3.9'
+            target:
+            target-python-version:
+            testing-type: units
+            test-deps:
+          - ansible-core-version: stable-2.13
+            docker-image: default
+            git-checkout-ref:
+            pre-test-cmd:
+            python-version: '3.10'
+            target:
+            target-python-version:
+            testing-type: integration
+            test-deps:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: .tmp-action-checkout/
+
+      - name: Run ${{ matrix.testing-type }} tests
+        uses: ./.tmp-action-checkout/
+        with:
+          ansible-core-version: ${{ matrix.ansible-core-version }}
+          collection-root: .internal/ansible/ansible_collections/internal/test
+          docker-image: ${{ matrix.docker-image }}
+          git-checkout-ref: ${{ matrix.git-checkout-ref }}
+          pre-test-cmd: ${{ matrix.pre-test-cmd }}
+          python-version: ${{ matrix.python-version }}
+          target: ${{ matrix.target }}
+          target-python-version: ${{ matrix.target-python-version }}
+          testing-type: ${{ matrix.testing-type }}
+          test-deps: ${{ matrix.test-deps }}

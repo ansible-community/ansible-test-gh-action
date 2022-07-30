@@ -1,0 +1,10 @@
+---
+- name: Call module
+  test:
+    test: foo
+  register: result
+
+- name: Check return value
+  assert:
+    that:
+      - result.test == 'foo'
