@@ -53,6 +53,11 @@ and https://github.com/ansible/ansible/branches/all?query=stable- for
 ideas **(DEFAULT: `stable-2.13`)**
 
 
+### `collection-root`
+
+Path to collection root relative to repository root **(DEFAULT: `.`)**
+
+
 ### `docker-image`
 
 A container image spawned by `ansible-test` **(OPTIONAL)**

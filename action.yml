@@ -14,6 +14,9 @@ inputs:
       ideas.
     default: stable-2.13
     required: true
+  collection-root:
+    description: Collection root relative to repository root
+    default: .
   docker-image:
     description: Docker image used by ansible-test
     default:
@@ -145,7 +148,7 @@ runs:
           format(name=coll_name, ns=coll_ns)
       )
     shell: python
-    working-directory: .tmp-ansible-collection-checkout
+    working-directory: .tmp-ansible-collection-checkout/${{ inputs.collection-root }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -164,7 +167,7 @@ runs:
       "${{ steps.collection-metadata.outputs.collection-namespace-path }}"
       ;
       mv -v
-      ".tmp-ansible-collection-checkout"
+      ".tmp-ansible-collection-checkout/${{ inputs.collection-root }}"
       "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
       set +x
