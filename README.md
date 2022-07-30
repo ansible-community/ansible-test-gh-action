@@ -122,7 +122,7 @@ Test dependencies to install along with this collection **(OPTIONAL)**
 Check out the [Data-Bene/ansible-test-versions-gh-action] to explore
 a semi-automatic job matrix generation for testing your collections. This
 project is not maintained by us but it is a rather promising way of
-configring your GitHub Actions CI/CD workflows.
+configuring your GitHub Actions CI/CD workflows.
 
 [🧪 GitHub Actions CI/CD workflow tests badge]:
 https://github.com/ansible-community/ansible-test-gh-action/actions/workflows/test-action.yml/badge.svg?branch=main&event=push
