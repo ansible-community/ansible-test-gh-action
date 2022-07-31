@@ -52,7 +52,14 @@ reproducible, saving you from sudden and unpleasant surprises.
 
 `ansible-core` Git revision. See https://github.com/ansible/ansible/tags
 and https://github.com/ansible/ansible/branches/all?query=stable- for
-ideas **(DEFAULT: `stable-2.13`)**
+ideas. The repository this refers to can be changed with the
+`ansible-core-repo` option. **(DEFAULT: `stable-2.13`)**
+
+
+### `ansible-core-repo`
+
+The repository from which to check out ansible-core
+**(DEFAULT: `ansible/ansible`)**
 
 
 ### `collection-root`
