@@ -7,4 +7,4 @@
 - name: Check return value
   assert:
     that:
-      - result.test == 'foo'
+    - result.test == 'foo'
