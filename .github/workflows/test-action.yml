@@ -1,12 +1,16 @@
 ---
-name: Test ansible-test-gh-action
+name: 🧪
 on:
   push:
   pull_request:
 
 jobs:
   tests:
-    name: Basic tests
+    name: >-
+      Ⓐ${{ matrix.ansible-core-version }}
+      @
+      🐍${{ matrix.python-version }}:
+      ${{ matrix.testing-type }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
