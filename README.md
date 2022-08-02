@@ -53,12 +53,12 @@ reproducible, saving you from sudden and unpleasant surprises.
 `ansible-core` Git revision. See https://github.com/ansible/ansible/tags
 and https://github.com/ansible/ansible/branches/all?query=stable- for
 ideas. The repository this refers to can be changed with the
-`ansible-core-repo` option. **(DEFAULT: `stable-2.13`)**
+`ansible-core-github-repository-slug` option. **(DEFAULT: `stable-2.13`)**
 
 
-### `ansible-core-repo`
+### `ansible-core-github-repository-slug`
 
-The repository from which to check out ansible-core
+The GitHub repository slug from which to check out ansible-core
 **(DEFAULT: `ansible/ansible`)**
 
 
