@@ -15,21 +15,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible-core-version: []
+        ansible-core-version:
+        -
         docker-image:
         - default
         git-checkout-ref:
         -
         pre-test-cmd:
         -
-        python-version: []
+        python-version:
+        -
         target:
         -
         target-python-version:
         -
         test-deps:
         -
-        testing-type: []
+        testing-type:
+        -
+        exclude:
+        - ansible-core-version:
         include:
         - ansible-core-version: stable-2.12
           python-version: '3.8'
