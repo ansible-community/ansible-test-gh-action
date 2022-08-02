@@ -12,34 +12,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        docker-image:
+        - default
+        git-checkout-ref:
+        -
+        pre-test-cmd:
+        -
+        target:
+        -
+        target-python-version:
+        -
+        test-deps:
+        -
         include:
         - ansible-core-version: stable-2.12
-          docker-image: default
-          git-checkout-ref:
-          pre-test-cmd:
           python-version: '3.8'
-          target:
-          target-python-version:
           testing-type: sanity
-          test-deps:
         - ansible-core-version: devel
-          docker-image: default
-          git-checkout-ref:
-          pre-test-cmd:
           python-version: '3.9'
-          target:
-          target-python-version:
           testing-type: units
-          test-deps:
         - ansible-core-version: stable-2.13
-          docker-image: default
-          git-checkout-ref:
-          pre-test-cmd:
           python-version: '3.10'
-          target:
-          target-python-version:
           testing-type: integration
-          test-deps:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
