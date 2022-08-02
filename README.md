@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ansible-community/ansible-test-gh-action/main.svg)](https://results.pre-commit.ci/latest/github/ansible-community/ansible-test-gh-action/main)
+
 # ansible-test-gh-action for setting up CI in Ansible Collection repositories
 
 A composite GitHub Action encapsulating the GitHub Actions CI/CD workflows
