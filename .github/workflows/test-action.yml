@@ -1,0 +1,73 @@
+---
+name: 🧪
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: >-
+      Ⓐ${{ matrix.ansible-core-version }}
+      @
+      🐍${{ matrix.python-version }}:
+      ${{ matrix.testing-type }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        docker-image:
+        - default
+        git-checkout-ref:
+        -
+        pre-test-cmd:
+        -
+        target:
+        -
+        target-python-version:
+        -
+        test-deps:
+        -
+        include:
+        - ansible-core-version: stable-2.12
+          python-version: '3.8'
+          testing-type: sanity
+        - ansible-core-version: devel
+          python-version: '3.9'
+          testing-type: units
+        - ansible-core-version: stable-2.13
+          python-version: '3.10'
+          testing-type: integration
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        path: .tmp-action-checkout/
+
+    - name: Run ${{ matrix.testing-type }} tests
+      uses: ./.tmp-action-checkout/
+      with:
+        ansible-core-version: ${{ matrix.ansible-core-version }}
+        collection-root: .internal/ansible/ansible_collections/internal/test
+        docker-image: ${{ matrix.docker-image }}
+        git-checkout-ref: ${{ matrix.git-checkout-ref }}
+        pre-test-cmd: ${{ matrix.pre-test-cmd }}
+        python-version: ${{ matrix.python-version }}
+        target: ${{ matrix.target }}
+        target-python-version: ${{ matrix.target-python-version }}
+        testing-type: ${{ matrix.testing-type }}
+        test-deps: ${{ matrix.test-deps }}
+
+  check:  # This job does nothing and is only used for the branch protection
+    if: always()
+
+    needs:
+    - tests
+
+    runs-on: Ubuntu-latest
+
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
+...
