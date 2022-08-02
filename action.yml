@@ -11,9 +11,13 @@ inputs:
     description: >-
       `ansible-core` Git revision. See https://github.com/ansible/ansible/tags
       and https://github.com/ansible/ansible/branches/all?query=stable- for
-      ideas.
+      ideas. The repository this refers to can be changed with the
+      `ansible-core-github-repository-slug` option.
     default: stable-2.13
     required: true
+  ansible-core-github-repository-slug:
+    description: The GitHub repository slug from which to check out ansible-core
+    default: ansible/ansible
   collection-root:
     description: Collection root relative to repository root
     default: .
@@ -187,7 +191,9 @@ runs:
       set -x
       ;
       python -m pip install
-      https://github.com/ansible/ansible/archive/${{
+      https://github.com/${{
+        inputs.ansible-core-github-repository-slug
+      }}/archive/${{
         inputs.ansible-core-version
       }}.tar.gz
       --disable-pip-version-check
