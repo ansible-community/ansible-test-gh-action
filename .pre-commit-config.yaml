@@ -82,7 +82,11 @@ repos:
     language_version: python3
 
 - repo: https://github.com/PyCQA/flake8.git
-  rev: 5.0.4
+  # NOTE: This is kept at v4 for until WPS starts supporting flake v5.
+  # NOTE: Pre-commit.ci's autoupdate changes must be reverted to keep
+  # NOTE: it working.
+  # Ref: https://github.com/pre-commit-ci/issues/issues/83
+  rev: 4.0.1
   hooks:
   - id: flake8
     alias: flake8-only-wps
