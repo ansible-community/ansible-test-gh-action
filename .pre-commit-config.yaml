@@ -61,7 +61,7 @@ repos:
     - --strict
 
 - repo: https://github.com/PyCQA/flake8.git
-  rev: 5.0.3
+  rev: 5.0.4
   hooks:
   - id: flake8
     alias: flake8-no-wps
@@ -82,7 +82,7 @@ repos:
     language_version: python3
 
 - repo: https://github.com/PyCQA/flake8.git
-  rev: 4.0.1
+  rev: 5.0.4
   hooks:
   - id: flake8
     alias: flake8-only-wps
