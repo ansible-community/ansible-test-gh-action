@@ -17,6 +17,8 @@ jobs:
       matrix:
         ansible-core-version:
         -
+        collection-root:
+        - .internal/ansible/ansible_collections/internal/test
         docker-image:
         - default
         git-checkout-ref:
@@ -36,13 +38,21 @@ jobs:
         exclude:
         - ansible-core-version:
         include:
+        - ansible-core-version: stable-2.11
+          python-version: '3.6'
+          testing-type: sanity
+          collection-root: .
+          pre-test-cmd: rm -rfv .internal/
         - ansible-core-version: stable-2.12
+          collection-root: .internal/ansible/ansible_collections/internal/test
           python-version: '3.8'
           testing-type: sanity
         - ansible-core-version: devel
+          collection-root: .internal/ansible/ansible_collections/internal/test
           python-version: '3.9'
           testing-type: units
         - ansible-core-version: stable-2.13
+          collection-root: .internal/ansible/ansible_collections/internal/test
           python-version: '3.10'
           testing-type: integration
     steps:
@@ -55,7 +65,7 @@ jobs:
       uses: ./.tmp-action-checkout/
       with:
         ansible-core-version: ${{ matrix.ansible-core-version }}
-        collection-root: .internal/ansible/ansible_collections/internal/test
+        collection-root: ${{ matrix.collection-root }}
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
         pre-test-cmd: ${{ matrix.pre-test-cmd }}

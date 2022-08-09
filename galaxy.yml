@@ -1,0 +1,11 @@
+---
+# This file is needed to run some tests. The action does not need this,
+# nor is this related to how the action works.
+
+namespace: testns
+name: testcol
+description: A collection internal to this repository for running tests.
+version: 0.1.0
+readme: README.md
+authors:
+- Felix Fontein (@felixfontein)
