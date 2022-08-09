@@ -17,11 +17,15 @@ jobs:
       matrix:
         ansible-core-version:
         -
+        collection-root:
+        -
         collection-src-directory:
         -
         docker-image:
         - default
         git-checkout-ref:
+        -
+        pre-action-cmd:
         -
         pre-test-cmd:
         -
@@ -38,19 +42,31 @@ jobs:
         exclude:
         - ansible-core-version:
         include:
+        - ansible-core-version: stable-2.11
+          python-version: '3.6'
+          testing-type: sanity
+          collection-root: .
+          collection-src-directory: ./.tmp-action-checkout
+          pre-action-cmd: >-
+            mv -v .internal/ansible/ansible_collections/internal/test/galaxy.yml .
+          pre-test-cmd: rm -rfv .internal/
         - ansible-core-version: stable-2.12
+          collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
           python-version: '3.8'
           testing-type: sanity
         - ansible-core-version: devel
+          collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
           python-version: '3.9'
           testing-type: units
         - ansible-core-version: stable-2.13
+          collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
           python-version: '3.10'
           testing-type: integration
         - ansible-core-version: stable-2.13
+          collection-root: .internal/ansible/ansible_collections/internal/test
           # NOTE: A missing `collection-src-directory` input causes
           # NOTE: fetching the repo from GitHub.
           python-version: '3.10'
@@ -61,12 +77,17 @@ jobs:
       with:
         path: .tmp-action-checkout/
 
+    - name: Run a pre-action command
+      if: matrix.pre-action-cmd
+      run: ${{ matrix.pre-action-cmd }}
+      working-directory: ./.tmp-action-checkout/
+
     - name: Run ${{ matrix.testing-type }} tests
       uses: ./.tmp-action-checkout/
       with:
         ansible-core-version: ${{ matrix.ansible-core-version }}
+        collection-root: ${{ matrix.collection-root }}
         collection-src-directory: ${{ matrix.collection-src-directory }}
-        collection-root: .internal/ansible/ansible_collections/internal/test
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
         pre-test-cmd: ${{ matrix.pre-test-cmd }}
