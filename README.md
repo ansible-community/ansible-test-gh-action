@@ -1,4 +1,4 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ansible-community/ansible-test-gh-action/main.svg)](https://results.pre-commit.ci/latest/github/ansible-community/ansible-test-gh-action/main)
+[![pre-commit.ci status badge]][pre-commit.ci results page]
 
 # ansible-test-gh-action for setting up CI in Ansible Collection repositories
 
@@ -116,6 +116,11 @@ Check out the [Data-Bene/ansible-test-versions-gh-action] to explore
 a semi-automatic job matrix generation for testing your collections. This
 project is not maintained by us but it is a rather promising way of
 configring your GitHub Actions CI/CD workflows.
+
+[pre-commit.ci results page]:
+https://results.pre-commit.ci/latest/github/ansible-community/ansible-test-gh-action/main
+[pre-commit.ci status badge]:
+https://results.pre-commit.ci/badge/github/ansible-community/ansible-test-gh-action/main.svg
 
 [Data-Bene/ansible-test-versions-gh-action]:
 https://github.com/Data-Bene/ansible-test-versions-gh-action
