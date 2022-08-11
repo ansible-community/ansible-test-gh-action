@@ -1,3 +1,4 @@
+[![🧪 GitHub Actions CI/CD workflow tests badge]][GHA workflow runs list]
 [![pre-commit.ci status badge]][pre-commit.ci results page]
 
 # ansible-test-gh-action for setting up CI in Ansible Collection repositories
@@ -116,6 +117,10 @@ Check out the [Data-Bene/ansible-test-versions-gh-action] to explore
 a semi-automatic job matrix generation for testing your collections. This
 project is not maintained by us but it is a rather promising way of
 configring your GitHub Actions CI/CD workflows.
+
+[🧪 GitHub Actions CI/CD workflow tests badge]:
+https://github.com/ansible-community/ansible-test-gh-action/actions/workflows/test-action.yml/badge.svg?branch=main&event=push
+[GHA workflow runs list]: https://github.com/ansible-community/ansible-test-gh-action/actions/workflows/test-action.yml?query=branch%3Amain
 
 [pre-commit.ci results page]:
 https://results.pre-commit.ci/latest/github/ansible-community/ansible-test-gh-action/main
