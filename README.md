@@ -81,6 +81,12 @@ its contents)**
 A container image spawned by `ansible-test` **(OPTIONAL)**
 
 
+### `git-checkout-ref`
+
+Committish to check out, unused if `collection-src-directory`
+is set **(OPTIONAL)**
+
+
 ### `pre-test-cmd`
 
 Extra command to invoke before ansible-test **(OPTIONAL)**
