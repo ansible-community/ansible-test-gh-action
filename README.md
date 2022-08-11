@@ -72,6 +72,12 @@ Path to collection root relative to repository root **(DEFAULT: `.`)**
 A container image spawned by `ansible-test` **(OPTIONAL)**
 
 
+### `git-checkout-repository`
+
+A Git repository to check out **(OPTIONAL; if unset or empty,
+the default fallback selection is deferred to `actions/checkout`)**
+
+
 ### `pre-test-cmd`
 
 Extra command to invoke before ansible-test **(OPTIONAL)**

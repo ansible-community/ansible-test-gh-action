@@ -58,6 +58,7 @@ jobs:
         collection-root: .internal/ansible/ansible_collections/internal/test
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
+        git-checkout-repository: ./.tmp-action-checkout/.git
         pre-test-cmd: ${{ matrix.pre-test-cmd }}
         python-version: ${{ matrix.python-version }}
         target: ${{ matrix.target }}
