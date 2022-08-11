@@ -67,6 +67,14 @@ The GitHub repository slug from which to check out ansible-core
 Path to collection root relative to repository root **(DEFAULT: `.`)**
 
 
+### `collection-src-directory`
+
+A pre-checked out collection directory that's already on disk
+**(OPTIONAL, substitutes getting the source from the remote Git
+repository if set, also this action will not attempt to mutate
+its contents)**
+
+
 ### `docker-image`
 
 A container image spawned by `ansible-test` **(OPTIONAL)**
