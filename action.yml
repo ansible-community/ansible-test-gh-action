@@ -207,7 +207,7 @@ runs:
             && inputs.collection-src-directory
             || '.tmp-ansible-collection-checkout'
           ),
-          inputs.collection-root
+          inputs.collection-root != '.' && inputs.collection-root || ''
         )
       }}"
       "${{ steps.collection-metadata.outputs.checkout-path }}"
