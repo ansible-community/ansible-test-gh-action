@@ -77,23 +77,19 @@ outputs:
 runs:
   using: composite
   steps:
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Setting controller Python
+      echo ▷ Setting controller Python
       to ${{ inputs.python-version }}...
     shell: bash
   - name: Set controller Python to ${{ inputs.python-version }}
     uses: actions/setup-python@v4
     with:
       python-version: ${{ inputs.python-version }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Install Python YAML library
+      echo ▷ Install Python YAML library
     shell: bash
   - name: Install PyYAML
     run: >-
@@ -107,16 +103,12 @@ runs:
       ;
       set +x
     shell: bash
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     if: >-
       !inputs.collection-src-directory
     run: >-
-      echo ::group::Checking out the repository into a temporary location...
+      echo ▷ Checking out the repository into a temporary location...
     shell: bash
   - name: Check out the collection
     if: >-
@@ -126,16 +118,10 @@ runs:
       path: .tmp-ansible-collection-checkout
       persist-credentials: false
       ref: ${{ inputs.git-checkout-ref }}
-  - name: Close an expandable block of code
-    if: >-
-      !inputs.collection-src-directory
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Extracting the collection metadata from "'galaxy.yml'"...
+      echo ▷ Extracting the collection metadata from "'galaxy.yml'"...
     shell: bash
   - name: Extract the collection metadata
     id: collection-metadata
@@ -178,16 +164,11 @@ runs:
           inputs.collection-root
         )
       }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::${{
-        inputs.collection-src-directory && 'Copy' || 'Move'
-      }} "'${{ steps.collection-metadata.outputs.fqcn }}'"
+      echo ▷ ${{ inputs.collection-src-directory && 'Copy' || 'Move' }}
+      "'${{ steps.collection-metadata.outputs.fqcn }}'"
       collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
     shell: bash
   - name: Move the collection to the proper path
@@ -214,14 +195,10 @@ runs:
       ;
       set +x
     shell: bash
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Installing ansible-core
+      echo ▷ Installing ansible-core
       version ${{ inputs.ansible-core-version }}...
     shell: bash
   - name: Install ansible-core (${{ inputs.ansible-core-version }})
@@ -239,14 +216,10 @@ runs:
       ;
       set +x
     shell: bash
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Installing collection
+      echo ▷ Installing collection
       dependencies: ${{ inputs.test-deps }}
     shell: bash
   - name: Install collection dependencies
@@ -258,14 +231,10 @@ runs:
           || '>&2 echo Skipping installing the dependencies...'
       }}
     shell: bash
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Running a pre-test
+      echo ▷ Running a pre-test
       command: "'${{ inputs.pre-test-cmd }}'"
     shell: bash
   - name: Run a pre-test command
@@ -279,14 +248,10 @@ runs:
       }}
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Running ${{ inputs.testing-type }} tests...
+      echo ▷ Running ${{ inputs.testing-type }} tests...
     shell: bash
   - name: Run ${{ inputs.testing-type }} tests
     # NOTE: Theoretically, it's best to have a `--` separator before the
@@ -318,14 +283,10 @@ runs:
       set +x
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Generating a coverage report...
+      echo ▷ Generating a coverage report...
     shell: bash
   - name: Generate coverage report
     run: >-
@@ -339,14 +300,10 @@ runs:
       set +x
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 
-  - name: Open an expandable block of code
+  - name: Log the next step action
     run: >-
-      echo ::group::Sending the coverage data over to
+      echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
     shell: bash
   - name: >-
@@ -355,8 +312,4 @@ runs:
     uses: codecov/codecov-action@v3
     with:
       flags: ${{ inputs.testing-type }}
-  - name: Close an expandable block of code
-    run: >-
-      echo ::endgroup::
-    shell: bash
 ...
