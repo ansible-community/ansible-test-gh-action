@@ -87,10 +87,12 @@ runs:
     with:
       python-version: ${{ inputs.python-version }}
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Install Python YAML library
+    shell: bash
   - name: Install PyYAML
     run: >-
-      echo ::group::▷ Install Python YAML library
-      ;
       set -x
       ;
       python -m
@@ -100,8 +102,6 @@ runs:
       --user
       ;
       set +x
-      ;
-      echo ::endgroup::
     shell: bash
 
   - name: Log the next step action
@@ -119,14 +119,13 @@ runs:
       persist-credentials: false
       ref: ${{ inputs.git-checkout-ref }}
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Extracting the collection metadata from "'galaxy.yml'"...
+    shell: bash
   - name: Extract the collection metadata
     id: collection-metadata
     run: |
-      print(
-        ':group:'
-        '▷ Extracting the collection metadata from "\'galaxy.yml\'"...',
-      )
-
       import yaml
 
       COLLECTION_META_FILE = 'galaxy.yml'
@@ -152,8 +151,6 @@ runs:
           '::set-output name=checkout-path::ansible_collections/{ns}/{name}'.
           format(name=coll_name, ns=coll_ns)
       )
-
-      print(':endgroup:')
     shell: python
     working-directory: >-
       ${{
@@ -168,14 +165,14 @@ runs:
         )
       }}
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ ${{ inputs.collection-src-directory && 'Copy' || 'Move' }}
+      "'${{ steps.collection-metadata.outputs.fqcn }}'"
+      collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
+    shell: bash
   - name: Move the collection to the proper path
     run: >-
-      echo ::group::▷ ${{
-        inputs.collection-src-directory && 'Copy' || 'Move'
-      }}
-      "'${{ steps.collection-metadata.outputs.fqcn }}'" collection to
-      ${{ steps.collection-metadata.outputs.checkout-path }}...
-      ;
       set -x
       ;
       mkdir -pv
@@ -197,15 +194,15 @@ runs:
       "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
       set +x
-      ;
-      echo ::endgroup::
     shell: bash
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Installing ansible-core
+      version ${{ inputs.ansible-core-version }}...
+    shell: bash
   - name: Install ansible-core (${{ inputs.ansible-core-version }})
     run: >-
-      echo :group:▷ Installing ansible-core
-      version ${{ inputs.ansible-core-version }}...
-      ;
       set -x
       ;
       python -m pip install
@@ -218,42 +215,44 @@ runs:
       --user
       ;
       set +x
-      ;
-      echo ::endgroup::
     shell: bash
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Installing collection
+      dependencies: ${{ inputs.test-deps }}
+    shell: bash
   - name: Install collection dependencies
     # if: inputs.test-deps
     run: >-
-      echo :group:▷ Installing collection
-      dependencies: ${{ inputs.test-deps }}
-      ;
       ${{
           inputs.test-deps
           && format('set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x', inputs.test-deps)
           || '>&2 echo Skipping installing the dependencies...'
       }}
-      ;
-      echo ::endgroup::
     shell: bash
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Running a pre-test
+      command: "'${{ inputs.pre-test-cmd }}'"
+    shell: bash
   - name: Run a pre-test command
     # if: inputs.pre-test-cmd
     # run: ${{ inputs.pre-test-cmd }}
     run: >-
-      echo :group:▷ Running a pre-test
-      command: "'${{ inputs.pre-test-cmd }}'"
-      ;
       ${{
           inputs.pre-test-cmd
           && format('set -x; {0}; set +x', inputs.pre-test-cmd)
           || '>&2 echo Skipping running the pre test command...'
       }}
-      ;
-      echo ::endgroup::
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Running ${{ inputs.testing-type }} tests...
+    shell: bash
   - name: Run ${{ inputs.testing-type }} tests
     # NOTE: Theoretically, it's best to have a `--` separator before the
     # NOTE: targets list but unfortunately, it causes problem with the
@@ -263,8 +262,6 @@ runs:
     # * https://github.com/ansible-community/ansible-test-gh-action/pull/9#discussion_r748488366
     # * https://github.com/ansible-community/ansible-test-gh-action/issues/8#issuecomment-968505014
     run: >-
-      echo :group:▷ Running ${{ inputs.testing-type }} tests...
-      ;
       set -x
       ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
@@ -284,15 +281,15 @@ runs:
       ${{ inputs.target }}
       ;
       set +x
-      ;
-      echo ::endgroup::
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
+  - name: Log the next step action
+    run: >-
+      echo ▷ Generating a coverage report...
+    shell: bash
   - name: Generate coverage report
     run: >-
-      echo :group:▷ Generating a coverage report...
-      ;
       set -x
       ;
       ~/.local/bin/ansible-test coverage xml
@@ -301,8 +298,6 @@ runs:
       --group-by version
       ;
       set +x
-      ;
-      echo ::endgroup::
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
