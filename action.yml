@@ -174,7 +174,7 @@ runs:
       mkdir -pv
       "${{ steps.collection-metadata.outputs.collection-namespace-path }}"
       ;
-      ln -s
+      mv -v
       ".tmp-ansible-collection-checkout/${{ inputs.collection-root }}"
       "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
