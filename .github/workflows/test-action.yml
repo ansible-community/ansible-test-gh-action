@@ -17,6 +17,8 @@ jobs:
       matrix:
         ansible-core-version:
         -
+        collection-src-directory:
+        -
         docker-image:
         - default
         git-checkout-ref:
@@ -37,12 +39,20 @@ jobs:
         - ansible-core-version:
         include:
         - ansible-core-version: stable-2.12
+          collection-src-directory: ./.tmp-action-checkout
           python-version: '3.8'
           testing-type: sanity
         - ansible-core-version: devel
+          collection-src-directory: ./.tmp-action-checkout
           python-version: '3.9'
           testing-type: units
         - ansible-core-version: stable-2.13
+          collection-src-directory: ./.tmp-action-checkout
+          python-version: '3.10'
+          testing-type: integration
+        - ansible-core-version: stable-2.13
+          # NOTE: A missing `collection-src-directory` input causes
+          # NOTE: fetching the repo from GitHub.
           python-version: '3.10'
           testing-type: integration
     steps:
@@ -55,6 +65,7 @@ jobs:
       uses: ./.tmp-action-checkout/
       with:
         ansible-core-version: ${{ matrix.ansible-core-version }}
+        collection-src-directory: ${{ matrix.collection-src-directory }}
         collection-root: .internal/ansible/ansible_collections/internal/test
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}

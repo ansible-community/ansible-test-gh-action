@@ -18,6 +18,12 @@ inputs:
   ansible-core-github-repository-slug:
     description: The GitHub repository slug from which to check out ansible-core
     default: ansible/ansible
+  collection-src-directory:
+    description: >-
+      A pre-checked out collection directory that's already on disk,
+      substitutes getting the source from the remote Git repository if
+      set. This action will not attempt to mutate its contents
+    default:
   collection-root:
     description: Collection root relative to repository root
     default: .
@@ -25,7 +31,9 @@ inputs:
     description: Docker image used by ansible-test
     default:
   git-checkout-ref:
-    description: Committish to check out
+    description: >-
+      Committish to check out, unused
+      if `collection-src-directory` is set
     default:
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
@@ -105,16 +113,22 @@ runs:
     shell: bash
 
   - name: Open an expandable block of code
+    if: >-
+      !inputs.collection-src-directory
     run: >-
       echo ::group::Checking out the repository into a temporary location...
     shell: bash
   - name: Check out the collection
+    if: >-
+      !inputs.collection-src-directory
     uses: actions/checkout@v3
     with:
       path: .tmp-ansible-collection-checkout
       persist-credentials: false
       ref: ${{ inputs.git-checkout-ref }}
   - name: Close an expandable block of code
+    if: >-
+      !inputs.collection-src-directory
     run: >-
       echo ::endgroup::
     shell: bash
@@ -152,7 +166,18 @@ runs:
           format(name=coll_name, ns=coll_ns)
       )
     shell: python
-    working-directory: .tmp-ansible-collection-checkout/${{ inputs.collection-root }}
+    working-directory: >-
+      ${{
+        format(
+          '{0}/{1}',
+          (
+            inputs.collection-src-directory
+            && inputs.collection-src-directory
+            || '.tmp-ansible-collection-checkout'
+          ),
+          inputs.collection-root
+        )
+      }}
   - name: Close an expandable block of code
     run: >-
       echo ::endgroup::
@@ -160,18 +185,31 @@ runs:
 
   - name: Open an expandable block of code
     run: >-
-      echo ::group::Move "'${{ steps.collection-metadata.outputs.fqcn }}'"
+      echo ::group::${{
+        inputs.collection-src-directory && 'Copy' || 'Move'
+      }} "'${{ steps.collection-metadata.outputs.fqcn }}'"
       collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
     shell: bash
-  - name: Install ansible-core (${{ inputs.ansible-core-version }})
+  - name: Move the collection to the proper path
     run: >-
       set -x
       ;
       mkdir -pv
       "${{ steps.collection-metadata.outputs.collection-namespace-path }}"
       ;
-      mv -v
-      ".tmp-ansible-collection-checkout/${{ inputs.collection-root }}"
+      ${{ inputs.collection-src-directory && 'cp -a' || 'mv' }}
+      -v
+      "${{
+        format(
+          '{0}/{1}',
+          (
+            inputs.collection-src-directory
+            && inputs.collection-src-directory
+            || '.tmp-ansible-collection-checkout'
+          ),
+          inputs.collection-root
+        )
+      }}"
       "${{ steps.collection-metadata.outputs.checkout-path }}"
       ;
       set +x
