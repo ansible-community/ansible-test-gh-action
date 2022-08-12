@@ -18,15 +18,15 @@ inputs:
   ansible-core-github-repository-slug:
     description: The GitHub repository slug from which to check out ansible-core
     default: ansible/ansible
+  collection-root:
+    description: Collection root relative to repository root
+    default: .
   collection-src-directory:
     description: >-
       A pre-checked out collection directory that's already on disk,
       substitutes getting the source from the remote Git repository if
       set. This action will not attempt to mutate its contents
     default:
-  collection-root:
-    description: Collection root relative to repository root
-    default: .
   docker-image:
     description: Docker image used by ansible-test
     default:
