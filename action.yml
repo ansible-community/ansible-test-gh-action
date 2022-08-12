@@ -18,6 +18,12 @@ inputs:
   ansible-core-github-repository-slug:
     description: The GitHub repository slug from which to check out ansible-core
     default: ansible/ansible
+  controller-python-version:
+    description: >-
+      Controller Python version. Only used for integration tests and
+      ansible-core 2.12 or later when `target-python-version` is also
+      specified.
+    default:
   collection-root:
     description: Collection root relative to repository root
     default: .
@@ -26,7 +32,7 @@ inputs:
       A pre-checked out collection directory that's already on disk,
       substitutes getting the source from the remote Git repository if
       set. This action will not attempt to mutate its contents
-    default:
+    default: auto
   docker-image:
     description: Docker image used by ansible-test
     default:
@@ -266,7 +272,6 @@ runs:
       ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
       -v --color
-      --docker ${{ inputs.docker-image }}
       --coverage
       ${{
           inputs.testing-type == 'integration'
@@ -274,9 +279,23 @@ runs:
           || ''
       }}
       ${{
-          inputs.target-python-version
-          && format('--python {0}', inputs.target-python-version)
-          || ''
+          inputs.testing-type == 'integration'
+          && inputs.ansible-core-version != 'stable-2.9'
+          && inputs.ansible-core-version != 'stable-2.10'
+          && inputs.ansible-core-version != 'stable-2.11'
+          && inputs.target-python-version
+          && inputs.controller-python-version != 'auto'
+          && inputs.controller-python-version != inputs.target-python-version
+          && format('--controller docker:default,python={0} --target docker:{1},python={2}',
+                    inputs.controller-python-version,
+                    inputs.docker-image || 'default',
+                    inputs.target-python-version)
+          || inputs.target-python-version
+          && format('--docker {0} --python {1}',
+                    inputs.docker-image,
+                    inputs.target-python-version)
+          || format('--docker {0}',
+                    inputs.docker-image)
       }}
       ${{ inputs.target }}
       ;
