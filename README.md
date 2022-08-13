@@ -93,7 +93,7 @@ Committish to check out, unused if `collection-src-directory`
 is set **(OPTIONAL)**
 
 
-### `job-python-version`
+### `origin-python-version`
 
 Environment Python version. The value `auto` uses the maximum Python
 version supported by the given `ansible-core-version` **(DEFAULT: `auto`)**
@@ -106,7 +106,7 @@ Extra command to invoke before ansible-test **(OPTIONAL)**
 
 ### `python-version`
 
-**(DEPRECATED)** Use `job-python-version` instead.
+**(DEPRECATED)** Use `origin-python-version` instead.
 
 
 ### `target`

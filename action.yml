@@ -41,19 +41,19 @@ inputs:
       Committish to check out, unused
       if `collection-src-directory` is set
     default:
-  pre-test-cmd:
-    description: Extra command to invoke before ansible-test
-    default:
-  job-python-version:
+  origin-python-version:
     description: >-
       Environment Python version. The value `auto` uses the maximum Python
       version supported by the given `ansible-core-version`.
     default: auto
+  pre-test-cmd:
+    description: Extra command to invoke before ansible-test
+    default:
   python-version:
     description: >-
-      **(DEPRECATED)** Use `job-python-version` instead. This is only kept for
+      **(DEPRECATED)** Use `origin-python-version` instead. This is only kept for
       backwards compatibility.
-    deprecationMessage: Replace `python-version` with `job-python-version`.
+    deprecationMessage: Replace `python-version` with `origin-python-version`.
     default:
   target:
     description: ansible-test TARGET
@@ -95,55 +95,55 @@ runs:
     run: echo ▷ Figuring out the environment Python version...
     shell: bash
   - name: Compute job Python version
-    id: compute-job-python-version
+    id: compute-origin-python-version
     run: |
       # Compute job Python version
       import sys
 
       # Input from GHA
-      job_python_version = '${{ inputs.job-python-version }}'
+      origin_python_version = '${{ inputs.origin-python-version }}'
       old_python_version = '${{ inputs.python-version }}'
       ansible_core_version = '${{ inputs.ansible-core-version }}'
 
       # Handle case that deprecated Python version parameter is provided
       if old_python_version:
-          # Check whether the default of job-python-version was changed
-          if job_python_version != 'auto':
+          # Check whether the default of origin-python-version was changed
+          if origin_python_version != 'auto':
               print(
-                  'ERROR: `python-version` and `job-python-version` cannot'
-                  ' both be supplied. Use only `job-python-version` and not'
+                  'ERROR: `python-version` and `origin-python-version` cannot'
+                  ' both be supplied. Use only `origin-python-version` and not'
                   ' its deprecated alias `python-version`.'
               )
               sys.exit(1)
 
-          job_python_version = old_python_version
+          origin_python_version = old_python_version
 
-      if job_python_version == 'auto':
+      if origin_python_version == 'auto':
           # Determine maximal Python version supported by the
           # given ansible-core version.
           if ansible_core_version in ('stable-2.9', ):
-              job_python_version = '3.8'
+              origin_python_version = '3.8'
           elif ansible_core_version in ('stable-2.10', 'stable-2.11'):
-              job_python_version = '3.9'
+              origin_python_version = '3.9'
           elif ansible_core_version in ('stable-2.12', 'stable-2.13'):
-              job_python_version = '3.10'
+              origin_python_version = '3.10'
           else:
               # For any non-stable branch, we assume the latest version
               # supported by 'devel':
-              job_python_version = '3.10'
+              origin_python_version = '3.10'
 
-      # Return computed job-python-version
-      print(f'::set-output name=job-python-version::{job_python_version}')
+      # Return computed origin-python-version
+      print(f'::set-output name=origin-python-version::{origin_python_version}')
     shell: python
   - name: Log the next step action
     run: >-
       echo ▷ Setting job Python to
-      ${{ steps.compute-job-python-version.outputs.job-python-version }}...
+      ${{ steps.compute-origin-python-version.outputs.origin-python-version }}...
     shell: bash
-  - name: Set controller Python to ${{ steps.compute-job-python-version.outputs.job-python-version }}
+  - name: Set controller Python to ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
     uses: actions/setup-python@v4
     with:
-      python-version: ${{ steps.compute-job-python-version.outputs.job-python-version }}
+      python-version: ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
 
   - name: Log the next step action
     run: >-

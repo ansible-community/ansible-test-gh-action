@@ -9,7 +9,7 @@ jobs:
     name: >-
       Ⓐ${{ matrix.ansible-core-version }}
       @
-      🐍${{ matrix.job-python-version }}:
+      🐍${{ matrix.origin-python-version }}:
       ${{ matrix.testing-type }}
     runs-on: ubuntu-latest
     strategy:
@@ -25,7 +25,7 @@ jobs:
         - default
         git-checkout-ref:
         -
-        job-python-version:
+        origin-python-version:
         -
         pre-action-cmd:
         -
@@ -43,7 +43,7 @@ jobs:
         - ansible-core-version:
         include:
         - ansible-core-version: stable-2.11
-          job-python-version: '3.6'
+          origin-python-version: '3.6'
           testing-type: sanity
           collection-root: .
           collection-src-directory: ./.tmp-action-checkout
@@ -53,23 +53,23 @@ jobs:
         - ansible-core-version: stable-2.12
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
-          job-python-version: auto
+          origin-python-version: auto
           testing-type: sanity
         - ansible-core-version: devel
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
-          job-python-version: auto
+          origin-python-version: auto
           testing-type: units
         - ansible-core-version: stable-2.13
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
-          job-python-version: '3.9'
+          origin-python-version: '3.9'
           testing-type: integration
         - ansible-core-version: stable-2.13
           collection-root: .internal/ansible/ansible_collections/internal/test
           # NOTE: A missing `collection-src-directory` input causes
           # NOTE: fetching the repo from GitHub.
-          job-python-version: auto
+          origin-python-version: auto
           testing-type: integration
     steps:
     - name: Checkout
