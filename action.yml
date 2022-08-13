@@ -97,31 +97,43 @@ runs:
   - name: Compute job Python version
     id: compute-job-python-version
     run: |
-      ENV_PYTHON_VERSION="${{ inputs.job-python-version }}"
-      if [ "${{ inputs.python-version }}" != "" ]; then
-        ENV_PYTHON_VERSION="${{ inputs.python-version }}"
-      elif [ "${ENV_PYTHON_VERSION}" == "auto" ]; then
-        # Determine maximal Python version supported by the
-        # given ansible-core version.
-        case "${{ inputs.ansible-core-version }}" in
-          stable-2.9)
-            ENV_PYTHON_VERSION="3.8"
-            ;;
-          stable-2.10 | stable-2.11)
-            ENV_PYTHON_VERSION="3.9"
-            ;;
-          stable-2.12 | stable-2.13)
-            ENV_PYTHON_VERSION="3.10"
-            ;;
-          *)
-            # For any non-stable branch, we assume the latest version
-            # supported by 'devel':
-            ENV_PYTHON_VERSION="3.10"
-            ;;
-        esac
-      fi
-      echo "::set-output name=job-python-version::${ENV_PYTHON_VERSION}"
-    shell: bash
+      import sys
+
+      # Input from GHA
+      job_python_version = '${{ inputs.job-python-version }}'
+      old_python_version = '${{ inputs.python-version }}'
+      ansible_core_version = '${{ inputs.ansible-core-version }}'
+
+      # Handle case that deprecated Python version parameter is provided
+      if old_python_version:
+          # Check whether the default of job-python-version was changed
+          if job_python_version != 'auto':
+              print(
+                  'ERROR: `python-version` and `job-python-version` cannot'
+                  ' both be supplied. Use only `job-python-version` and not'
+                  ' its deprecated alias `python-version`.'
+              )
+              sys.exit(1)
+
+          job_python_version = old_python_version
+
+      if job_python_version == 'auto':
+          # Determine maximal Python version supported by the
+          # given ansible-core version.
+          if ansible_core_version in ('stable-2.9', ):
+              job_python_version = '3.8'
+          elif ansible_core_version in ('stable-2.10', 'stable-2.11'):
+              job_python_version = '3.9'
+          elif ansible_core_version in ('stable-2.12', 'stable-2.13'):
+              job_python_version = '3.10'
+          else:
+              # For any non-stable branch, we assume the latest version
+              # supported by 'devel':
+              job_python_version = '3.10'
+
+      # Return computed job-python-version
+      print(f'::set-output name=job-python-version::{job_python_version}')
+    shell: python
   - name: Log the next step action
     run: >-
       echo ▷ Setting controller Python
