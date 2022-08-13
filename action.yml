@@ -137,8 +137,8 @@ runs:
     shell: python
   - name: Log the next step action
     run: >-
-      echo ▷ Setting controller Python
-      to ${{ inputs.job-python-version }}...
+      echo ▷ Setting job Python to
+      ${{ steps.compute-job-python-version.outputs.job-python-version }}...
     shell: bash
   - name: Set controller Python to ${{ steps.compute-job-python-version.outputs.job-python-version }}
     uses: actions/setup-python@v4
