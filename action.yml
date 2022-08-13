@@ -97,6 +97,7 @@ runs:
   - name: Compute job Python version
     id: compute-job-python-version
     run: |
+      # Compute job Python version
       import sys
 
       # Input from GHA
