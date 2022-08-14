@@ -109,12 +109,11 @@ runs:
       if old_python_version:
           # Check whether the default of origin-python-version was changed
           if origin_python_version != 'auto':
-              print(
-                  'ERROR: `python-version` and `origin-python-version` cannot'
+              sys.exit(
+                  '::error ::`python-version` and `origin-python-version` cannot'
                   ' both be supplied. Use only `origin-python-version` and not'
                   ' its deprecated alias `python-version`.'
               )
-              sys.exit(1)
 
           origin_python_version = old_python_version
 
@@ -132,7 +131,7 @@ runs:
               # supported by 'devel':
               origin_python_version = '3.10'
 
-      # Return computed origin-python-version
+      # Set computed origin-python-version
       print(f'::set-output name=origin-python-version::{origin_python_version}')
     shell: python
   - name: Log the next step action
