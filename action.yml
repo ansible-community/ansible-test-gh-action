@@ -111,11 +111,12 @@ runs:
       if old_python_version:
           # Check whether the default of origin-python-version was changed
           if origin_python_version != 'auto':
-              sys.exit(
+              print(
                   '::error ::`python-version` and `origin-python-version` cannot'
                   ' both be supplied. Use only `origin-python-version` and not'
                   ' its deprecated alias `python-version`.'
               )
+              sys.exit(1)
 
           origin_python_version = old_python_version
 
