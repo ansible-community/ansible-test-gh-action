@@ -85,10 +85,10 @@ outputs:
     description: Detected collection FQCN
     value: ${{ steps.collection-metadata.outputs.fqcn }}
   collection-name:
-    description: Detected collection FQCN
+    description: Detected collection name
     value: ${{ steps.collection-metadata.outputs.name }}
   collection-namespace:
-    description: Detected collection FQCN
+    description: Detected collection namespace
     value: ${{ steps.collection-metadata.outputs.namespace }}
   origin-python-path:
     description: >-
