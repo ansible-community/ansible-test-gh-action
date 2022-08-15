@@ -99,28 +99,31 @@ jobs:
         test-deps: ${{ matrix.test-deps }}
 
     - name: Log the outputs
-      run: >-
-        echo
-        "ansible-playbook-executable=${{
+      run: |
+        echo "ansible-playbook-executable=${{
           steps.tests.outputs.ansible-playbook-executable
-        }}\n"
-        "ansible-test-executable=${{
+        }}"
+        echo "ansible-test-executable=${{
           steps.tests.outputs.ansible-test-executable
-        }}\n"
-        "checkout-directory=${{
+        }}"
+        echo "checkout-directory=${{
           steps.tests.outputs.checkout-directory
-        }}\n"
-        "collection-fqcn=${{ steps.tests.outputs.collection-fqcn }}\n"
-        "collection-name=${{ steps.tests.outputs.collection-name }}\n"
-        "collection-namespace=${{
+        }}"
+        echo "collection-fqcn=${{
+          steps.tests.outputs.collection-fqcn
+        }}"
+        echo "collection-name=${{
+          steps.tests.outputs.collection-name
+        }}"
+        echo "collection-namespace=${{
           steps.tests.outputs.collection-namespace
-        }}\n"
-        "origin-python-path=${{
+        }}"
+        echo "origin-python-path=${{
           steps.tests.outputs.origin-python-path
-        }}\n"
-        "origin-python-version=${{
+        }}"
+        echo "origin-python-version=${{
           steps.tests.outputs.origin-python-version
-        }}\n"
+        }}"
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
