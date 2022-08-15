@@ -103,24 +103,24 @@ jobs:
         echo
         "ansible-playbook-executable=${{
           steps.tests.outputs.ansible-playbook-executable
-        }}"
+        }}\n"
         "ansible-test-executable=${{
           steps.tests.outputs.ansible-test-executable
-        }}"
+        }}\n"
         "checkout-directory=${{
           steps.tests.outputs.checkout-directory
-        }}"
-        "collection-fqcn=${{ steps.tests.outputs.collection-fqcn }}"
-        "collection-name=${{ steps.tests.outputs.collection-name }}"
+        }}\n"
+        "collection-fqcn=${{ steps.tests.outputs.collection-fqcn }}\n"
+        "collection-name=${{ steps.tests.outputs.collection-name }}\n"
         "collection-namespace=${{
           steps.tests.outputs.collection-namespace
-        }}"
+        }}\n"
         "origin-python-path=${{
           steps.tests.outputs.origin-python-path
-        }}"
+        }}\n"
         "origin-python-version=${{
           steps.tests.outputs.origin-python-version
-        }}"
+        }}\n"
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
