@@ -90,6 +90,18 @@ outputs:
   collection-namespace:
     description: Detected collection FQCN
     value: ${{ steps.collection-metadata.outputs.namespace }}
+  origin-python-version:
+    description: >-
+      The actual value of `origin-python-version` passed to the
+      [setup-python](https://github.com/actions/setup-python/#readme) action.
+    value: ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+  origin-python-path:
+    description: >-
+      The [`python-path` output
+      value](https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#python-path)
+      of the [setup-python](https://github.com/actions/setup-python/#readme)
+      action.
+    value: ${{ steps.setup-python.outputs.python-path }}
 runs:
   using: composite
   steps:
@@ -147,6 +159,7 @@ runs:
       ${{ steps.compute-origin-python-version.outputs.origin-python-version }}...
     shell: bash
   - name: Set controller Python to ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+    id: setup-python
     uses: actions/setup-python@v4
     with:
       python-version: ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
