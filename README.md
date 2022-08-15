@@ -129,6 +129,50 @@ or 'integration')**
 
 Test dependencies to install along with this collection **(OPTIONAL)**
 
+
+## Outputs
+
+
+### `ansible-playbook-executable`
+
+Path to the auto-installed `ansible-playbook` executable
+
+
+### `ansible-test-executable`
+
+Path to the auto-installed `ansible-test` executable
+
+
+### `checkout-directory`
+
+Path to the auto-downloaded collection src directory
+
+
+### `collection-fqcn`
+
+Detected collection FQCN
+
+
+### `collection-name`
+
+Detected collection name
+
+
+### `collection-namespace`
+
+Detected collection namespace
+
+
+### `origin-python-path`
+
+The [`python-path` output value][`python-path`] of the [setup-python] action
+
+
+### `origin-python-version`
+
+The actual value of `origin-python-version` passed to the [setup-python] action
+
+
 ## Related community projects
 
 Check out the [Data-Bene/ansible-test-versions-gh-action] to explore
@@ -144,6 +188,10 @@ https://github.com/ansible-community/ansible-test-gh-action/actions/workflows/te
 https://results.pre-commit.ci/latest/github/ansible-community/ansible-test-gh-action/main
 [pre-commit.ci status badge]:
 https://results.pre-commit.ci/badge/github/ansible-community/ansible-test-gh-action/main.svg
+
+[`python-path`]:
+https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#python-path
+[setup-python]: https://github.com/actions/setup-python/#readme
 
 [Data-Bene/ansible-test-versions-gh-action]:
 https://github.com/Data-Bene/ansible-test-versions-gh-action
