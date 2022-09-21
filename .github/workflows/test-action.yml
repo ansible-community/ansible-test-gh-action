@@ -16,31 +16,31 @@ jobs:
       fail-fast: false
       matrix:
         ansible-core-version:
-        -
+        - ''
         collection-root:
-        -
+        - ''
         collection-src-directory:
-        -
+        - ''
         docker-image:
         - default
         git-checkout-ref:
-        -
+        - ''
         origin-python-version:
-        -
+        - ''
         pre-action-cmd:
-        -
+        - ''
         pre-test-cmd:
-        -
+        - ''
         target:
-        -
+        - ''
         target-python-version:
-        -
+        - ''
         test-deps:
-        -
+        - ''
         testing-type:
-        -
+        - ''
         exclude:
-        - ansible-core-version:
+        - ansible-core-version: ''
         include:
         - ansible-core-version: stable-2.11
           origin-python-version: '3.6'

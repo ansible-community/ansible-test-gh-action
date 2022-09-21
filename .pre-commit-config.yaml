@@ -24,7 +24,7 @@ repos:
   rev: 0.18.3
   hooks:
   - id: check-github-actions
-  # - id: check-github-workflows
+  - id: check-github-workflows
   # - id: check-jsonschema
   #   name: Check GitHub Workflows set timeout-minutes
   #   args:
