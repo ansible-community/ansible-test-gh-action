@@ -32,15 +32,12 @@ inputs:
       A pre-checked out collection directory that's already on disk,
       substitutes getting the source from the remote Git repository if
       set. This action will not attempt to mutate its contents
-    default:
   docker-image:
     description: Docker image used by ansible-test
-    default:
   git-checkout-ref:
     description: >-
       Committish to check out, unused
       if `collection-src-directory` is set
-    default:
   origin-python-version:
     description: >-
       Environment Python version. The value `auto` uses the maximum Python
@@ -48,7 +45,6 @@ inputs:
     default: auto
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
-    default:
   python-version:
     description: >-
       **(DEPRECATED)** Use `origin-python-version` instead. This is only kept for
@@ -56,19 +52,15 @@ inputs:
     deprecationMessage: >-
       Replace `python-version` with `origin-python-version`.
       It is scheduled to be removed in version 3 of this action.
-    default:
   target:
     description: ansible-test TARGET
-    default:
   target-python-version:
     description: Target Python version
-    default:
   testing-type:
     description: One of 'sanity', 'units' or 'integration'
     required: true
   test-deps:
     description: Test dependencies to install along with this collection
-    default:
 outputs:
   ansible-playbook-executable:
     description: Path to the auto-installed `ansible-playbook` executable

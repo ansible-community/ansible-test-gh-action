@@ -20,6 +20,21 @@ repos:
   hooks:
   - id: remove-tabs
 
+- repo: https://github.com/python-jsonschema/check-jsonschema.git
+  rev: 0.18.3
+  hooks:
+  - id: check-github-actions
+  # - id: check-github-workflows
+  # - id: check-jsonschema
+  #   name: Check GitHub Workflows set timeout-minutes
+  #   args:
+  #   - --builtin-schema
+  #   - github-workflows-require-timeout
+  #   files: ^\.github/workflows/[^/]+$
+  #   types:
+  #   - yaml
+  - id: check-readthedocs
+
 - repo: https://github.com/pre-commit/pre-commit-hooks.git
   rev: v4.3.0
   hooks:
