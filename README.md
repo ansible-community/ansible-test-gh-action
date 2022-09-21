@@ -16,7 +16,7 @@ To use the action add the following step to your workflow file (e.g.
 - name: Perform integration testing with ansible-test
   uses: ansible-community/ansible-test-gh-action@release/v1
   with:
-    ansible-core-version: stable-2.13
+    ansible-core-version: stable-2.14
     pre-test-cmd: echo This runs before the ansible-test invocation
     target-python-version: 3.9
     controller-python-version: auto
@@ -25,12 +25,12 @@ To use the action add the following step to your workflow file (e.g.
 - name: Perform sanity testing with ansible-test
   uses: ansible-community/ansible-test-gh-action@release/v1
   with:
-    ansible-core-version: stable-2.13
+    ansible-core-version: stable-2.14
     testing-type: sanity
 - name: Perform unit testing with ansible-test
   uses: ansible-community/ansible-test-gh-action@release/v1
   with:
-    ansible-core-version: stable-2.13
+    ansible-core-version: stable-2.14
     pre-test-cmd: echo This runs before the ansible-test invocation
     target-python-version: 3.9
     testing-type: units
@@ -53,7 +53,7 @@ reproducible, saving you from sudden and unpleasant surprises.
 `ansible-core` Git revision. See https://github.com/ansible/ansible/tags
 and https://github.com/ansible/ansible/branches/all?query=stable- for
 ideas. The repository this refers to can be changed with the
-`ansible-core-github-repository-slug` option. **(DEFAULT: `stable-2.13`)**
+`ansible-core-github-repository-slug` option. **(DEFAULT: `stable-2.14`)**
 
 
 ### `ansible-core-github-repository-slug`
