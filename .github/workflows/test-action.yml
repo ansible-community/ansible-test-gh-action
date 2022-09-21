@@ -131,7 +131,7 @@ jobs:
     needs:
     - tests
 
-    runs-on: Ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Decide whether the needed jobs succeeded or failed
