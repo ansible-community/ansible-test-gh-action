@@ -142,6 +142,7 @@ runs:
               'stable-2.11': '3.9',
               'stable-2.12': '3.10',
               'stable-2.13': '3.10',
+              'stable-2.14': '3.10',
           }
           origin_python_version = python_version_map.get(
               ansible_core_version,
