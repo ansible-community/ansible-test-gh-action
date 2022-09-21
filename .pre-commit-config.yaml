@@ -99,10 +99,7 @@ repos:
 
 - repo: https://github.com/PyCQA/flake8.git
   # NOTE: This is kept at v4 for until WPS starts supporting flake v5.
-  # NOTE: Pre-commit.ci's autoupdate changes must be reverted to keep
-  # NOTE: it working.
-  # Ref: https://github.com/pre-commit-ci/issues/issues/83
-  rev: 4.0.1
+  rev: 4.0.1  # enforce-version: 4.0.1
   hooks:
   - id: flake8
     alias: flake8-only-wps
@@ -144,5 +141,37 @@ repos:
       wrong-import-position,
     - --output-format
     - colorized
+
+- repo: local
+  hooks:
+  - id: enforced-flake8-version
+    name: Verify that enforced flake8 version stays unchanged
+    description: >-
+      This is a sanity check and fixer that makes sure that
+      the `flake8` version in this file remains matching the
+      corresponding request in the `# enforce-version` comment.
+    # Using Python here because using
+    # shell test does not always work in CIs:
+    entry: >-
+      python -c 'import pathlib, re, sys;
+      pre_commit_config = pathlib.Path(sys.argv[1]);
+      cfg_txt = pre_commit_config.read_text();
+      new_cfg_txt = re.sub(
+      r"(?P<spaces>\s+)rev:\s(?:\d+\.\d+\.\d+)\s{0,2}"
+      r"#\senforce-version:\s(?P<enforced_version>\d+\.\d+\.\d+)"
+      r"[ \t\f\v]*",
+      r"\g<spaces>rev: \g<enforced_version>  "
+      r"# enforce-version: \g<enforced_version>",
+      cfg_txt,
+      );
+      cfg_txt != new_cfg_txt and
+      pre_commit_config.write_text(new_cfg_txt)
+      '
+    pass_filenames: true
+    language: system
+    files: >-
+      ^\.pre-commit-config\.ya?ml$
+    types:
+    - yaml
 
 ...
