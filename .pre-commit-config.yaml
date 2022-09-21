@@ -25,14 +25,14 @@ repos:
   hooks:
   - id: check-github-actions
   - id: check-github-workflows
-  # - id: check-jsonschema
-  #   name: Check GitHub Workflows set timeout-minutes
-  #   args:
-  #   - --builtin-schema
-  #   - github-workflows-require-timeout
-  #   files: ^\.github/workflows/[^/]+$
-  #   types:
-  #   - yaml
+  - id: check-jsonschema
+    name: Check GitHub Workflows set timeout-minutes
+    args:
+    - --builtin-schema
+    - github-workflows-require-timeout
+    files: ^\.github/workflows/[^/]+$
+    types:
+    - yaml
   - id: check-readthedocs
 
 - repo: https://github.com/pre-commit/pre-commit-hooks.git

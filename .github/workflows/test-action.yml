@@ -12,6 +12,7 @@ jobs:
       🐍${{ matrix.origin-python-version }}:
       ${{ matrix.testing-type }}
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     strategy:
       fail-fast: false
       matrix:
@@ -132,6 +133,8 @@ jobs:
     - tests
 
     runs-on: ubuntu-latest
+
+    timeout-minutes: 1
 
     steps:
     - name: Decide whether the needed jobs succeeded or failed
