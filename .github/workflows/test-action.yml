@@ -72,6 +72,12 @@ jobs:
           # NOTE: fetching the repo from GitHub.
           origin-python-version: auto
           testing-type: integration
+        - ansible-core-version: stable-2.14
+          collection-root: .internal/ansible/ansible_collections/internal/test
+          collection-src-directory: ./.tmp-action-checkout
+          origin-python-version: >-
+            3.10
+          testing-type: integration
     steps:
     - name: Checkout
       uses: actions/checkout@v3
