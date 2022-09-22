@@ -12,7 +12,7 @@ jobs:
       🐍${{ matrix.origin-python-version }}:
       ${{ matrix.testing-type }}
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 3
     strategy:
       fail-fast: false
       matrix:
