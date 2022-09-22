@@ -361,6 +361,12 @@ runs:
           || format('--docker {0}',
                     inputs.docker-image)
       }}
+      ${{
+          inputs.testing-type == 'integration'
+          && job.container.network != ''
+          && format('--docker-network={0}', job.container.network)
+          || ''
+      }}
       ${{ inputs.target }}
       ;
       set +x
