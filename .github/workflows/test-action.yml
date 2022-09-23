@@ -75,12 +75,18 @@ jobs:
           # NOTE: fetching the repo from GitHub.
           origin-python-version: auto
           testing-type: integration
+          test-deps: >-
+            --no-deps
+            https://github.com/ansible-collections/ansible.netcommon.git
         - ansible-core-version: stable-2.14
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
           origin-python-version: >-
             3.10
           testing-type: integration
+          test-deps: >-
+            https://github.com/ansible-collections/ansible.utils.git
+            https://github.com/ansible-collections/ansible.netcommon.git
     steps:
     - name: Checkout
       uses: actions/checkout@v3
