@@ -427,7 +427,6 @@ runs:
     uses: codecov/codecov-action@v3
     with:
       flags: ${{ inputs.testing-type }}
-    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Produce markdown test summary from JUnit
     if: always()
