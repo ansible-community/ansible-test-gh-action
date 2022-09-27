@@ -438,5 +438,8 @@ runs:
       # the collection ones.
       # Since we are targeting collections, it's fine for us not to
       # have a similar conditional.
-      paths: tests/output/junit/*.xml
+      paths: >-
+        ${{
+          steps.collection-metadata.outputs.checkout-path
+        }}/tests/output/junit/*.xml
 ...
