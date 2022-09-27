@@ -1,6 +1,7 @@
 ---
 name: 🧪
-on:
+
+on:   # yamllint disable-line rule:truthy
   push:
   pull_request:
 
@@ -52,7 +53,8 @@ jobs:
           collection-root: .
           collection-src-directory: ./.tmp-action-checkout
           pre-action-cmd: >-
-            mv -v .internal/ansible/ansible_collections/internal/test/galaxy.yml .
+            mv -v
+            .internal/ansible/ansible_collections/internal/test/galaxy.yml .
           pre-test-cmd: rm -rfv .internal/
         - ansible-core-version: stable-2.12
           collection-root: .internal/ansible/ansible_collections/internal/test
