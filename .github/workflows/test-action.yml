@@ -109,8 +109,8 @@ jobs:
         collection-src-directory: ${{ matrix.collection-src-directory }}
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
+        origin-python-version: ${{ matrix.origin-python-version }}
         pre-test-cmd: ${{ matrix.pre-test-cmd }}
-        python-version: ${{ matrix.python-version }}
         target: ${{ matrix.target }}
         target-python-version: ${{ matrix.target-python-version }}
         testing-type: ${{ matrix.testing-type }}
