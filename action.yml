@@ -426,6 +426,12 @@ runs:
       https://codecov.io/gh/${{ github.repository }}
     uses: codecov/codecov-action@v3
     with:
+      files: >-
+        ${{
+          steps.collection-metadata.outputs.checkout-path
+        }}/tests/output/reports/coverage=${{
+          inputs.testing-type
+        }}=python-*.xml
       flags: ${{ inputs.testing-type }}
 
   - name: Produce markdown test summary from JUnit
