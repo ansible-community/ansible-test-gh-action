@@ -47,8 +47,8 @@ inputs:
     description: Extra command to invoke before ansible-test
   python-version:
     description: >-
-      **(DEPRECATED)** Use `origin-python-version` instead. This is only kept for
-      backwards compatibility.
+      **(DEPRECATED)** Use `origin-python-version` instead. This is only kept
+      for backwards compatibility.
     deprecationMessage: >-
       Replace `python-version` with `origin-python-version`.
       It is scheduled to be removed in version 3 of this action.
@@ -93,7 +93,8 @@ outputs:
     description: >-
       The actual value of `origin-python-version` passed to the
       [setup-python](https://github.com/actions/setup-python/#readme) action.
-    value: ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+    value: >-
+      ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
 runs:
   using: composite
   steps:
@@ -116,9 +117,9 @@ runs:
           # Check whether the default of origin-python-version was changed
           if origin_python_version != 'auto':
               print(
-                  '::error ::`python-version` and `origin-python-version` cannot'
-                  ' both be supplied. Use only `origin-python-version` and not'
-                  ' its deprecated alias `python-version`.'
+                  '::error ::`python-version` and `origin-python-version` '
+                  'cannot both be supplied. Use only `origin-python-version` '
+                  'and not its deprecated alias `python-version`.'
               )
               sys.exit(1)
 
@@ -149,13 +150,20 @@ runs:
   - name: Log the next step action
     run: >-
       echo ▷ Setting job Python to
-      ${{ steps.compute-origin-python-version.outputs.origin-python-version }}...
+      ${{
+        steps.compute-origin-python-version.outputs.origin-python-version
+      }}...
     shell: bash
-  - name: Set controller Python to ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+  - name: >-
+      Set controller Python to
+      ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
     id: setup-python
     uses: actions/setup-python@v4
     with:
-      python-version: ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+      python-version: >-
+        ${{
+          steps.compute-origin-python-version.outputs.origin-python-version
+        }}
 
   - name: Log the next step action
     run: >-
@@ -294,12 +302,17 @@ runs:
     shell: bash
   - name: Install collection dependencies
     # if: inputs.test-deps
+    # yamllint disable rule:line-length
     run: >-
       ${{
           inputs.test-deps
-          && format('set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x', inputs.test-deps)
+          && format(
+              'set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x',
+              inputs.test-deps
+          )
           || '>&2 echo Skipping installing the dependencies...'
       }}
+    # yamllint enable rule:line-length
     shell: bash
 
   - name: Log the next step action
@@ -324,6 +337,7 @@ runs:
       echo ▷ Running ${{ inputs.testing-type }} tests...
     shell: bash
   - name: Run ${{ inputs.testing-type }} tests
+    # yamllint disable rule:line-length
     # NOTE: Theoretically, it's best to have a `--` separator before the
     # NOTE: targets list but unfortunately, it causes problem with the
     # NOTE: arguments bypass when run with `--docker` so for now, it's
@@ -355,16 +369,22 @@ runs:
           && inputs.target-python-version
           && inputs.controller-python-version != 'auto'
           && inputs.controller-python-version != inputs.target-python-version
-          && format('--controller docker:default,python={0} --target docker:{1},python={2}',
-                    inputs.controller-python-version,
-                    inputs.docker-image || 'default',
-                    inputs.target-python-version)
+          && format(
+              '--controller docker:default,python={0} --target docker:{1},python={2}',
+              inputs.controller-python-version,
+              inputs.docker-image || 'default',
+              inputs.target-python-version
+          )
           || inputs.target-python-version
-          && format('--docker {0} --python {1}',
-                    inputs.docker-image,
-                    inputs.target-python-version)
-          || format('--docker {0}',
-                    inputs.docker-image)
+          && format(
+              '--docker {0} --python {1}',
+              inputs.docker-image,
+              inputs.target-python-version
+          )
+          || format(
+              '--docker {0}',
+              inputs.docker-image
+          )
       }}
       ${{
           inputs.testing-type == 'integration'
@@ -375,6 +395,7 @@ runs:
       ${{ inputs.target }}
       ;
       set +x
+    # yamllint enable rule:line-length
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
