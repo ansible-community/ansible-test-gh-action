@@ -1,6 +1,6 @@
 ---
 
 fixes:
-- "/ansible_collections/::/.internal/ansible/ansible_collections/"
+- "ansible_collections/::.internal/ansible/ansible_collections/"
 
 ...
