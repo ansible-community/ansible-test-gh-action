@@ -411,5 +411,11 @@ runs:
     if: always()
     uses: test-summary/action@v1
     with:
-      paths: tests/output/junit/*.xml 
+      # NOTE: The path is borrowed from
+      # https://github.com/ansible/ansible/blob/71adb02/.azure-pipelines/scripts/process-results.sh#L6-L10
+      # which suggests that ansible-core's location is different from
+      # the collection ones.
+      # Since we are targeting collections, it's fine for us not to
+      # have a similar conditional.
+      paths: tests/output/junit/*.xml
 ...
