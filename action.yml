@@ -338,6 +338,11 @@ runs:
       -v --color
       --coverage
       ${{
+          inputs.testing-type == 'sanity'
+          && '--junit'
+          || ''
+      }}
+      ${{
           inputs.testing-type == 'integration'
           && '--retry-on-error --continue-on-error --diff'
           || ''
