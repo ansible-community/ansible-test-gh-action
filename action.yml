@@ -406,4 +406,10 @@ runs:
     uses: codecov/codecov-action@v3
     with:
       flags: ${{ inputs.testing-type }}
+
+  - name: Produce markdown test summary from JUnit
+    if: always()
+    uses: test-summary/action@v1
+    with:
+      paths: tests/output/junit/*.xml 
 ...
