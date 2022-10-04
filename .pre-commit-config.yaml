@@ -4,7 +4,7 @@ ci:
 
 repos:
 - repo: https://github.com/asottile/add-trailing-comma.git
-  rev: v2.2.3
+  rev: v2.3.0
   hooks:
   - id: add-trailing-comma
 
@@ -16,7 +16,7 @@ repos:
     - --honor-noqa
 
 - repo: https://github.com/Lucas-C/pre-commit-hooks.git
-  rev: v1.3.0
+  rev: v1.3.1
   hooks:
   - id: remove-tabs
 
@@ -62,12 +62,12 @@ repos:
     language_version: python3
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.1.0
+  rev: v2.2.1
   hooks:
   - id: codespell
 
 - repo: https://github.com/adrienverge/yamllint.git
-  rev: v1.27.1
+  rev: v1.28.0
   hooks:
   - id: yamllint
     files: \.(yaml|yml)$
@@ -123,7 +123,7 @@ repos:
     language_version: python3
 
 - repo: https://github.com/PyCQA/pylint.git
-  rev: v2.14.5
+  rev: v2.15.3
   hooks:
   - id: pylint
     args:
