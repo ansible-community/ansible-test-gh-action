@@ -456,6 +456,8 @@ runs:
     if: always()
     id: coverage-files
     run: >-
+      set +x
+      ;
       compgen -G "${{
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/reports/coverage=${{
@@ -467,6 +469,8 @@ runs:
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/coverage/*"
       && echo "::set-output name=present::true"
+      ;
+      exit 0
     shell: bash
   - name: Produce markdown test summary from Cobertura XML
     if: steps.coverage-files.outputs.present == 'true'
