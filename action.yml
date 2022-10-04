@@ -452,8 +452,24 @@ runs:
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/junit/*.xml
 
-  - name: Produce markdown test summary from Cobertura XML
+  - name: Check if Cobertura XML coverage files exist
     if: always()
+    id: coverage-files
+    run: >-
+      compgen -G "${{
+        steps.collection-metadata.outputs.checkout-path
+      }}/tests/output/reports/coverage=${{
+        inputs.testing-type
+      }}=python-*.xml"
+      && echo "::set-output name=present::true"
+      ;
+      compgen -G "${{
+        steps.collection-metadata.outputs.checkout-path
+      }}/tests/output/coverage/*"
+      && echo "::set-output name=present::true"
+    shell: bash
+  - name: Produce markdown test summary from Cobertura XML
+    if: steps.coverage-files.outputs.present == 'true'
     uses: irongut/CodeCoverageSummary@v1.3.0
     with:
       badge: true
@@ -470,6 +486,7 @@ runs:
       output: both
   # Ref: https://github.com/irongut/CodeCoverageSummary/issues/66
   - name: Append coverage results to Job Summary
+    if: steps.coverage-files.outputs.present == 'true'
     run: >-
       cat code-coverage-results.md >> "${GITHUB_STEP_SUMMARY}"
     shell: bash
