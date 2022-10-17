@@ -431,10 +431,7 @@ runs:
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/reports/coverage=${{
           inputs.testing-type
-        }}=*.xml,
-        ${{
-          steps.collection-metadata.outputs.checkout-path
-        }}/tests/output/coverage/*
+        }}=*.xml
       flags: ${{ inputs.testing-type }}
 
   - name: Produce markdown test summary from JUnit
@@ -465,11 +462,6 @@ runs:
       }}=*.xml"
       && echo "::set-output name=present::true"
       ;
-      compgen -G "${{
-        steps.collection-metadata.outputs.checkout-path
-      }}/tests/output/coverage/*"
-      && echo "::set-output name=present::true"
-      ;
       exit 0
     shell: bash
   - name: Produce markdown test summary from Cobertura XML
@@ -482,10 +474,7 @@ runs:
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/reports/coverage=${{
           inputs.testing-type
-        }}=python-*.xml,
-        ${{
-          steps.collection-metadata.outputs.checkout-path
-        }}/tests/output/coverage/*
+        }}=python-*.xml
       format: markdown
       output: both
   # Ref: https://github.com/irongut/CodeCoverageSummary/issues/66
