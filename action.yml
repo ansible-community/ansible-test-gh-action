@@ -431,7 +431,7 @@ runs:
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/reports/coverage=${{
           inputs.testing-type
-        }}=python-*.xml,
+        }}=*.xml,
         ${{
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/coverage/*
@@ -462,7 +462,7 @@ runs:
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/reports/coverage=${{
         inputs.testing-type
-      }}=python-*.xml"
+      }}=*.xml"
       && echo "::set-output name=present::true"
       ;
       compgen -G "${{
