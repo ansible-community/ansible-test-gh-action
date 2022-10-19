@@ -105,7 +105,12 @@ runs:
     id: compute-origin-python-version
     run: |
       # Compute job Python version
+      import os
       import sys
+
+      def set_output(name, value):
+          with open(os.getenv('GITHUB_OUTPUT'), 'a') as out:
+              print(f'{name}={value}', file=out)
 
       # Input from GHA
       origin_python_version = '${{ inputs.origin-python-version }}'
@@ -145,7 +150,7 @@ runs:
           )
 
       # Set computed origin-python-version
-      print(f'::set-output name=origin-python-version::{origin_python_version}')
+      set_output('origin-python-version', origin_python_version)
     shell: python
   - name: Log the next step action
     run: >-
@@ -204,7 +209,12 @@ runs:
   - name: Extract the collection metadata
     id: collection-metadata
     run: |
+      import os
       import yaml
+
+      def set_output(name, value):
+          with open(os.getenv('GITHUB_OUTPUT'), 'a') as out:
+              print(f'{name}={value}', file=out)
 
       COLLECTION_META_FILE = 'galaxy.yml'
       with open(COLLECTION_META_FILE) as galaxy_yml:
@@ -213,22 +223,12 @@ runs:
       coll_name = collection_meta['name']
       coll_ns = collection_meta['namespace']
 
-      print('::set-output name=name::{name}'.format(name=coll_name))
-      print('::set-output name=namespace::{ns}'.format(ns=coll_ns))
+      set_output('name', coll_name)
+      set_output('namespace', coll_ns)
 
-      print(
-          '::set-output name=fqcn::{ns}.{name}'.
-          format(name=coll_name, ns=coll_ns)
-      )
-      print(
-          '::set-output '
-          'name=collection-namespace-path::ansible_collections/{ns}'.
-          format(ns=coll_ns)
-      )
-      print(
-          '::set-output name=checkout-path::ansible_collections/{ns}/{name}'.
-          format(name=coll_name, ns=coll_ns)
-      )
+      set_output('fqcn', f'{coll_ns}.{coll_name}')
+      set_output('collection-namespace-path', f'ansible_collections/{coll_ns}')
+      set_output('checkout-path', f'ansible_collections/{coll_ns}/{coll_name}')
     shell: python
     working-directory: >-
       ${{
@@ -460,7 +460,7 @@ runs:
       }}/tests/output/reports/coverage=${{
         inputs.testing-type
       }}=*.xml"
-      && echo "::set-output name=present::true"
+      && ( echo "present=true" >> ${GITHUB_OUTPUT} )
       ;
       exit 0
     shell: bash
