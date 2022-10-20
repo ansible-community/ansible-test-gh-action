@@ -106,11 +106,15 @@ runs:
     run: |
       # Compute job Python version
       import os
+      import pathlib
       import sys
 
+      FILE_APPEND_MODE = 'a'
+      OUTPUTS_FILE_PATH = pathlib.Path(os.environ['GITHUB_OUTPUT'])
+
       def set_output(name, value):
-          with open(os.getenv('GITHUB_OUTPUT'), 'a') as out:
-              print(f'{name}={value}', file=out)
+          with OUTPUTS_FILE_PATH.open(FILE_APPEND_MODE) as outputs_file:
+              outputs_file.writelines(f'{name}={value}{os.linesep}')
 
       # Input from GHA
       origin_python_version = '${{ inputs.origin-python-version }}'
@@ -210,11 +214,15 @@ runs:
     id: collection-metadata
     run: |
       import os
+      import pathlib
       import yaml
 
+      FILE_APPEND_MODE = 'a'
+      OUTPUTS_FILE_PATH = pathlib.Path(os.environ['GITHUB_OUTPUT'])
+
       def set_output(name, value):
-          with open(os.getenv('GITHUB_OUTPUT'), 'a') as out:
-              print(f'{name}={value}', file=out)
+          with OUTPUTS_FILE_PATH.open(FILE_APPEND_MODE) as outputs_file:
+              outputs_file.writelines(f'{name}={value}{os.linesep}')
 
       COLLECTION_META_FILE = 'galaxy.yml'
       with open(COLLECTION_META_FILE) as galaxy_yml:
