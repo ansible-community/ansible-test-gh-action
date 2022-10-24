@@ -104,6 +104,18 @@ version supported by the given `ansible-core-version` **(DEFAULT: `auto`)**
 Extra command to invoke before ansible-test **(OPTIONAL)**
 
 
+### `pull-request-change-detection`
+
+Whether to use change detection for pull requests. If set to `true`, will
+use change detection to determine changed files against the target branch,
+and will not upload code coverage results. If the invocation is not from a
+pull request, this option is ignored. Note that this requires
+`collection-src-directory` to be empty, or it has to be a git repository
+checkout where `collection-src-directory`/`collection-root` ends with
+`ansible_collections/{namespace}/{name}`, or it has to be a git
+repository checkout where `collection-root` is `.`. **(DEFAULT: `false`)**
+
+
 ### `python-version`
 
 **(DEPRECATED)** Use `origin-python-version` instead.
