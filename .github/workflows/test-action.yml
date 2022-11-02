@@ -36,6 +36,8 @@ jobs:
         - ''
         pre-test-cmd:
         - ''
+        pull-request-change-detection:
+        - ''
         target:
         - ''
         target-python-version:
@@ -70,6 +72,7 @@ jobs:
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
           origin-python-version: '3.9'
+          pull-request-change-detection: 'true'
           testing-type: integration
         - ansible-core-version: stable-2.13
           collection-root: .internal/ansible/ansible_collections/internal/test
@@ -111,6 +114,7 @@ jobs:
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
         origin-python-version: ${{ matrix.origin-python-version }}
         pre-test-cmd: ${{ matrix.pre-test-cmd }}
+        pull-request-change-detection: ${{ matrix.pull-request-change-detection || 'false' }}
         target: ${{ matrix.target }}
         target-python-version: ${{ matrix.target-python-version }}
         testing-type: ${{ matrix.testing-type }}
