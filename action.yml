@@ -51,7 +51,7 @@ inputs:
       use change detection to determine changed files against the target
       branch, and will not upload code coverage results. If the invocation is
       not from a pull request, this option is ignored.
-    default: false
+    default: 'false'
   python-version:
     description: >-
       **(DEPRECATED)** Use `origin-python-version` instead. This is only kept
