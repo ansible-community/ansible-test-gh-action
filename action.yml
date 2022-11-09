@@ -226,7 +226,7 @@ runs:
 
       COLLECTION_META_FILE = 'galaxy.yml'
       with open(COLLECTION_META_FILE) as galaxy_yml:
-          collection_meta = yaml.load(galaxy_yml)
+          collection_meta = yaml.safe_load(galaxy_yml)
 
       coll_name = collection_meta['name']
       coll_ns = collection_meta['namespace']
