@@ -224,22 +224,7 @@ runs:
           with OUTPUTS_FILE_PATH.open(FILE_APPEND_MODE) as outputs_file:
               outputs_file.writelines(f'{name}={value}{os.linesep}')
 
-      COLLECTION_META_FILE = 'galaxy.yml'
-      with open(COLLECTION_META_FILE) as galaxy_yml:
-          collection_meta = yaml.load(galaxy_yml)
-
-      coll_name = collection_meta['name']
-      coll_ns = collection_meta['namespace']
-
-      set_output('name', coll_name)
-      set_output('namespace', coll_ns)
-
-      set_output('fqcn', f'{coll_ns}.{coll_name}')
-      set_output('collection-namespace-path', f'ansible_collections/{coll_ns}')
-      set_output('checkout-path', f'ansible_collections/{coll_ns}/{coll_name}')
-    shell: python
-    working-directory: >-
-      ${{
+      directory = "${{
         format(
           '{0}/{1}',
           (
@@ -249,15 +234,48 @@ runs:
           ),
           inputs.collection-root
         )
-      }}
+      }}"
+
+      COLLECTION_META_FILE = 'galaxy.yml'
+      with open(os.path.join(directory, COLLECTION_META_FILE)) as galaxy_yml:
+          collection_meta = yaml.load(galaxy_yml)
+
+      coll_name = collection_meta['name']
+      coll_ns = collection_meta['namespace']
+
+      set_output('name', coll_name)
+      set_output('namespace', coll_ns)
+
+      set_output('fqcn', f'{coll_ns}.{coll_name}')
+
+      wanted_path = f'ansible_collections{os.sep}{coll_ns}{os.sep}{coll_name}'
+      if directory.endswith(wanted_path):
+          set_output('copy-to-checkout-path', 'false')
+          set_output(
+              'collection-namespace-path',
+              os.path.normpath(os.path.join(directory, '..')))
+          set_output('checkout-path', directory)
+      else:
+          set_output('copy-to-checkout-path', 'true')
+          set_output(
+              'collection-namespace-path',
+              os.path.join('ansible_collections', coll_ns))
+          set_output(
+              'checkout-path',
+              os.path.join('ansible_collections', coll_ns, coll_name))
+    shell: python
 
   - name: Log the next step action
+    if: >-
+      ${{ fromJSON(steps.collection-metadata.outputs.copy-to-checkout-path) }}
     run: >-
       echo ▷ ${{ inputs.collection-src-directory && 'Copy' || 'Move' }}
       "'${{ steps.collection-metadata.outputs.fqcn }}'"
       collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
     shell: bash
   - name: Move the collection to the proper path
+    if: >-
+      ${{ fromJSON(steps.collection-metadata.outputs.copy-to-checkout-path) }}
     run: >-
       set -x
       ;
