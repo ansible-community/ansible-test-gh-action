@@ -313,8 +313,23 @@ runs:
       set_output('namespace', coll_ns)
 
       set_output('fqcn', f'{coll_ns}.{coll_name}')
-      set_output('collection-namespace-path', f'ansible_collections/{coll_ns}')
-      set_output('checkout-path', f'ansible_collections/{coll_ns}/{coll_name}')
+
+      cwd = os.getcwd()
+      wanted_path = f'ansible_collections{os.sep}{coll_ns}{os.sep}{coll_name}'
+      if cwd.endswith(wanted_path):
+          set_output('copy-to-checkout-path', 'false')
+          set_output(
+              'collection-namespace-path',
+              os.path.normpath(os.path.join(cwd, '..')))
+          set_output('checkout-path', cwd)
+      else:
+          set_output('copy-to-checkout-path', 'true')
+          set_output(
+              'collection-namespace-path',
+              os.path.join('ansible_collections', coll_ns))
+          set_output(
+              'checkout-path',
+              os.path.join('ansible_collections', coll_ns, coll_name))
     shell: python
     working-directory: >-
       ${{
@@ -330,12 +345,16 @@ runs:
       }}
 
   - name: Log the next step action
+    if: >-
+      ${{ fromJSON(steps.collection-metadata.outputs.copy-to-checkout-path) }}
     run: >-
       echo ▷ ${{ inputs.collection-src-directory && 'Copy' || 'Move' }}
       "'${{ steps.collection-metadata.outputs.fqcn }}'"
       collection to ${{ steps.collection-metadata.outputs.checkout-path }}...
     shell: bash
   - name: Move the collection to the proper path
+    if: >-
+      ${{ fromJSON(steps.collection-metadata.outputs.copy-to-checkout-path) }}
     run: >-
       set -x
       ;
