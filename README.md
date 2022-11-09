@@ -109,7 +109,9 @@ Extra command to invoke before ansible-test **(OPTIONAL)**
 Whether to use change detection for pull requests. If set to `true`, will
 use change detection to determine changed files against the target branch,
 and will not upload code coverage results. If the invocation is not from a
-pull request, this option is ignored. **(DEFAULT: `false`)**
+pull request, this option is ignored. Note that this requires
+`collection-src-directory` to be empty or something ending with
+`ansible_collections/{namespace}/{name}`. **(DEFAULT: `false`)**
 
 
 ### `python-version`
