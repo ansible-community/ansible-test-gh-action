@@ -271,15 +271,15 @@ runs:
       # Create a branch for the current HEAD, which happens to be a merge commit
       git checkout -b __action_branch_name
 
-      # Check out the target branch and name it
-      git checkout -b ${{
+      # Name the target branch
+      git branch ${{
         github.event.pull_request.base.ref
       }} --track origin/${{
         github.event.pull_request.base.ref
       }}
 
-      # Check out the merge commit
-      git checkout __action_branch_name
+      # Show branch information
+      git branch -vv
     shell: bash
     working-directory: >-
       .tmp-ansible-collection-checkout
