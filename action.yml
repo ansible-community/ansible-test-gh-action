@@ -45,6 +45,21 @@ inputs:
     description: >-
       Committish to check out, unused
       if `collection-src-directory` is set
+  integration-continue-on-error:
+    description: >-
+      Whether the continue with the other integration tests when an error
+      occurs. If set to `false`, will stop on the first error. When set to
+      `false` and `coverage=auto`, code coverage uploading will be disabled.
+    default: 'true'
+  integration-diff:
+    description: >-
+      Whether to show diff output when calling actions in integration tests.
+      Actions can override this by specifying `diff: false` or `diff: true`.
+    default: 'true'
+  integration-retry-on-error:
+    description: >-
+      Whether to retry the current integration test once when an error happens.
+    default: 'true'
   origin-python-version:
     description: >-
       Environment Python version. The value `auto` uses the maximum Python
@@ -234,6 +249,13 @@ runs:
       }}')
       pull_request_branch = '${{ github.event.pull_request.base.ref || '' }}'
       coverage = '${{ inputs.coverage }}'
+      integration_continue_on_error = json.loads('${{
+        inputs.integration-continue-on-error
+      }}')
+      integration_diff = json.loads('${{ inputs.integration-diff }}')
+      integration_retry_on_error = json.loads('${{
+        inputs.integration-retry-on-error
+      }}')
 
       # Validate GHA inputs
       if coverage not in {'always', 'never', 'auto'}:
@@ -248,14 +270,28 @@ runs:
       change_detection_arg = ''
       if pull_request_branch and pull_request_change_detection:
           if coverage == 'auto':
+              print(
+                  'Disabling coverage reporting due to pull request '
+                  'change detection being enabled.',
+              )
               coverage_arg = ''
           change_detection_arg = (
               f'--changed --base-branch {pull_request_branch}'
           )
 
+      # Determine integration test flags
+      integration_flags = []
+      if integration_retry_on_error:
+          integration_flags.append('--retry-on-error')
+      if integration_continue_on_error:
+          integration_flags.append('--continue-on-error')
+      if integration_diff:
+          integration_flags.append('--diff')
+
       # Set computed coverage-arg and change-detection-arg
       set_output('coverage-arg', coverage_arg)
       set_output('change-detection-arg', change_detection_arg)
+      set_output('integration-flags', ' '.join(integration_flags))
     shell: python
 
   - name: Log the next step action
@@ -485,7 +521,7 @@ runs:
       }}
       ${{
           inputs.testing-type == 'integration'
-          && '--retry-on-error --continue-on-error --diff'
+          && steps.ansible-test-flags.outputs.integration-flags
           || ''
       }}
       ${{

@@ -101,6 +101,27 @@ Committish to check out, unused if `collection-src-directory`
 is set **(OPTIONAL)**
 
 
+### `integration-continue-on-error`
+
+Whether the continue with the other integration tests when an error occurs.
+If set to `false`, will stop on the first error. When set to `false` and
+`coverage=auto`, code coverage uploading will be disabled.
+**(DEFAULT: `true`)**
+
+
+### `integration-diff`
+
+Whether to show diff output when calling actions in integration tests.
+Actions can override this by specifying `diff: false` or `diff: true`.
+**(DEFAULT: `true`)**
+
+
+### `integration-retry-on-error`
+
+Whether to retry the current integration test once when an error happens.
+**(DEFAULT: `true`)**
+
+
 ### `origin-python-version`
 
 Environment Python version. The value `auto` uses the maximum Python
