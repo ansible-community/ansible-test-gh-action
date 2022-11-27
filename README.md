@@ -82,6 +82,14 @@ repository if set, also this action will not attempt to mutate
 its contents)**
 
 
+### `coverage`
+
+Whether to collect and upload coverage information. Can be set to
+`always`, `never`, and `auto`. The value `auto` will upload coverage
+information except when `pull-request-change-detection` is set to `true`
+and the action is called from a Pull Request. **(DEFAULT: `auto`)**
+
+
 ### `docker-image`
 
 A container image spawned by `ansible-test` **(OPTIONAL)**
