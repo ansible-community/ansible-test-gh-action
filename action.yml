@@ -45,6 +45,17 @@ inputs:
     default: auto
   pre-test-cmd:
     description: Extra command to invoke before ansible-test
+  pull-request-change-detection:
+    description: >-
+      Whether to use change detection for pull requests. If set to `true`, will
+      use change detection to determine changed files against the target
+      branch, and will not upload code coverage results. If the invocation is
+      not from a pull request, this option is ignored. Note that this requires
+      `collection-src-directory` to be empty, or it has to be a git repository
+      checkout where `collection-src-directory`/`collection-root` ends with
+      `ansible_collections/{namespace}/{name}`, or it has to be a git
+      repository checkout where `collection-root` is `.`.
+    default: 'false'
   python-version:
     description: >-
       **(DEPRECATED)** Use `origin-python-version` instead. This is only kept
@@ -192,6 +203,45 @@ runs:
     shell: bash
 
   - name: Log the next step action
+    run: echo ▷ Figuring out ansible-test flags
+    shell: bash
+  - name: Determine ansible-test flags
+    id: ansible-test-flags
+    run: |
+      # Compute whether to use change detection and coverage
+      import json
+      import os
+      import pathlib
+      import sys
+
+      FILE_APPEND_MODE = 'a'
+      OUTPUTS_FILE_PATH = pathlib.Path(os.environ['GITHUB_OUTPUT'])
+
+      def set_output(name, value):
+          with OUTPUTS_FILE_PATH.open(FILE_APPEND_MODE) as outputs_file:
+              outputs_file.writelines(f'{name}={value}{os.linesep}')
+
+      # Input from GHA
+      pull_request_change_detection = json.loads('${{
+        inputs.pull-request-change-detection
+      }}')
+      pull_request_branch = '${{ github.event.pull_request.base.ref || '' }}'
+
+      # Compute coverage and change detection arguments
+      coverage_arg = '--coverage'
+      change_detection_arg = ''
+      if pull_request_branch and pull_request_change_detection:
+          coverage_arg = ''
+          change_detection_arg = (
+              f'--changed --base-branch {pull_request_branch}'
+          )
+
+      # Set computed coverage-arg and change-detection-arg
+      set_output('coverage-arg', coverage_arg)
+      set_output('change-detection-arg', change_detection_arg)
+    shell: python
+
+  - name: Log the next step action
     if: >-
       !inputs.collection-src-directory
     run: >-
@@ -205,6 +255,39 @@ runs:
       path: .tmp-ansible-collection-checkout
       persist-credentials: false
       ref: ${{ inputs.git-checkout-ref }}
+      fetch-depth: >-
+        ${{
+          steps.ansible-test-flags.outputs.change-detection-arg
+          && '0' || '1'
+        }}
+
+  - name: Log the next step action
+    if: >-
+      !inputs.collection-src-directory
+      && steps.ansible-test-flags.outputs.change-detection-arg
+    run: >-
+      echo ▷ Create branches for change detection
+    shell: bash
+  - name: Create branches for change detection
+    if: >-
+      !inputs.collection-src-directory
+      && steps.ansible-test-flags.outputs.change-detection-arg
+    run: |
+      # Create a branch for the current HEAD, which happens to be a merge commit
+      git checkout -b 'pull-request-${{ github.event.pull_request.number }}'
+
+      # Name the target branch
+      git branch '${{
+        github.event.pull_request.base.ref
+      }}' --track 'origin/${{
+        github.event.pull_request.base.ref
+      }}'
+
+      # Show branch information
+      git branch -vv
+    shell: bash
+    working-directory: >-
+      .tmp-ansible-collection-checkout
 
   - name: Log the next step action
     run: >-
@@ -376,7 +459,8 @@ runs:
       ;
       ~/.local/bin/ansible-test ${{ inputs.testing-type }}
       -v --color
-      --coverage
+      ${{ steps.ansible-test-flags.outputs.coverage-arg }}
+      ${{ steps.ansible-test-flags.outputs.change-detection-arg }}
       ${{
           inputs.testing-type == 'sanity'
           && '--junit'
@@ -426,10 +510,12 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
     run: >-
       echo ▷ Generating a coverage report...
     shell: bash
   - name: Generate coverage report
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
     run: >-
       set -x
       ;
@@ -443,6 +529,7 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
     run: >-
       echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
@@ -450,6 +537,7 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
     uses: codecov/codecov-action@v3
     with:
       files: >-
