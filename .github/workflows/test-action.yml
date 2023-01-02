@@ -50,7 +50,7 @@ jobs:
         - ansible-core-version: ''
         include:
         - ansible-core-version: stable-2.11
-          origin-python-version: '3.6'
+          origin-python-version: '3.8'
           testing-type: sanity
           collection-root: .
           collection-src-directory: ./.tmp-action-checkout
