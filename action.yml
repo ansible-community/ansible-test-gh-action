@@ -236,7 +236,7 @@ runs:
       coverage = '${{ inputs.coverage }}'
 
       # Validate GHA inputs
-      if coverage not in ('always', 'never', 'auto'):
+      if coverage not in {'always', 'never', 'auto'}:
           print(
               '::error ::`coverage` must have one of the values `always`,'
               f' `never`, or `auto`.  The current value is `{coverage}`.'
