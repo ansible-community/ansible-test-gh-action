@@ -46,6 +46,8 @@ jobs:
         - ''
         testing-type:
         - ''
+        coverage:
+        - auto
         exclude:
         - ansible-core-version: ''
         include:
@@ -54,6 +56,7 @@ jobs:
           testing-type: sanity
           collection-root: .
           collection-src-directory: ./.tmp-action-checkout
+          coverage: auto
           pre-action-cmd: >-
             mv -v
             .internal/ansible/ansible_collections/internal/test/galaxy.yml .
@@ -61,17 +64,20 @@ jobs:
         - ansible-core-version: stable-2.12
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
+          coverage: never
           origin-python-version: auto
           testing-type: sanity
         - ansible-core-version: devel
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
+          coverage: always
           origin-python-version: auto
           testing-type: units
         - ansible-core-version: stable-2.13
           collection-root: .internal/ansible/ansible_collections/internal/test
           # NOTE: A missing `collection-src-directory` input causes
           # NOTE: fetching the repo from GitHub.
+          coverage: auto
           origin-python-version: '3.9'
           pull-request-change-detection: 'true'
           testing-type: integration
@@ -79,6 +85,7 @@ jobs:
           collection-root: .internal/ansible/ansible_collections/internal/test
           # NOTE: A missing `collection-src-directory` input causes
           # NOTE: fetching the repo from GitHub.
+          coverage: auto
           origin-python-version: auto
           testing-type: integration
           test-deps: >-
@@ -87,6 +94,7 @@ jobs:
         - ansible-core-version: stable-2.14
           collection-root: .internal/ansible/ansible_collections/internal/test
           collection-src-directory: ./.tmp-action-checkout
+          coverage: auto
           origin-python-version: >-
             3.10
           testing-type: integration
@@ -111,6 +119,7 @@ jobs:
         ansible-core-version: ${{ matrix.ansible-core-version }}
         collection-root: ${{ matrix.collection-root }}
         collection-src-directory: ${{ matrix.collection-src-directory }}
+        coverage: ${{ matrix.coverage }}
         docker-image: ${{ matrix.docker-image }}
         git-checkout-ref: ${{ matrix.git-checkout-ref }}
         origin-python-version: ${{ matrix.origin-python-version }}

@@ -32,6 +32,13 @@ inputs:
       A pre-checked out collection directory that's already on disk,
       substitutes getting the source from the remote Git repository if
       set. This action will not attempt to mutate its contents
+  coverage:
+    description: >-
+      Whether to collect and upload coverage information. Can be set to
+      `always`, `never`, and `auto`. The value `auto` will upload coverage
+      information except when `pull-request-change-detection` is set to `true`
+      and the action is called from a Pull Request.
+    default: auto
   docker-image:
     description: Docker image used by ansible-test
   git-checkout-ref:
@@ -226,12 +233,22 @@ runs:
         inputs.pull-request-change-detection
       }}')
       pull_request_branch = '${{ github.event.pull_request.base.ref || '' }}'
+      coverage = '${{ inputs.coverage }}'
+
+      # Validate GHA inputs
+      if coverage not in {'always', 'never', 'auto'}:
+          print(
+              '::error ::`coverage` must have one of the values `always`,'
+              f' `never`, or `auto`.  The current value is `{coverage}`.'
+          )
+          sys.exit(1)
 
       # Compute coverage and change detection arguments
-      coverage_arg = '--coverage'
+      coverage_arg = '' if coverage == 'never' else '--coverage'
       change_detection_arg = ''
       if pull_request_branch and pull_request_change_detection:
-          coverage_arg = ''
+          if coverage == 'auto':
+              coverage_arg = ''
           change_detection_arg = (
               f'--changed --base-branch {pull_request_branch}'
           )
