@@ -170,22 +170,23 @@ runs:
       if origin_python_version == 'auto':
           # Determine the maximum Python version supported by the
           # given ansible-core version.
-          python_version_fallback_for_devel = '3.11'
           python_version_map = {
-              'stable-2.9': '3.8',
-              'stable-2.10': '3.9',
-              'stable-2.11': '3.9',
-              'stable-2.12': '3.10',
-              'stable-2.13': '3.10',
-              'stable-2.14': '3.11',
-              'stable-2.15': '3.11',
+              'stable-2.9': (3, 8),
+              'stable-2.10': (3, 9),
+              'stable-2.11': (3, 9),
+              'stable-2.12': (3, 10),
+              'stable-2.13': (3, 10),
+              'stable-2.14': (3, 11),
+              'stable-2.15': (3, 11),
           }
-          origin_python_version = python_version_map.get(
+          python_version_fallback_for_devel = max(set(python_version_map.values()))
+          origin_python_version_tuple = python_version_map.get(
               ansible_core_version,
               # For any non-stable branch, we assume
               # the latest version supported by 'devel':
               python_version_fallback_for_devel,
           )
+          origin_python_version = '.'.join(origin_python_version_tuple)
 
       # Set computed origin-python-version
       set_output('origin-python-version', origin_python_version)
