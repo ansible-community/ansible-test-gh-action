@@ -186,7 +186,9 @@ runs:
               # the latest version supported by 'devel':
               python_version_fallback_for_devel,
           )
-          origin_python_version = '.'.join(origin_python_version_tuple)
+          origin_python_version = '.'.join(
+              map(str, origin_python_version_tuple),
+          )
 
       # Set computed origin-python-version
       set_output('origin-python-version', origin_python_version)
