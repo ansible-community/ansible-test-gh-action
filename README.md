@@ -18,7 +18,7 @@ To use the action add the following step to your workflow file (e.g.
   with:
     ansible-core-version: stable-2.14
     pre-test-cmd: echo This runs before the ansible-test invocation
-    target-python-version: 3.9
+    target-python-version: 3.11
     controller-python-version: auto
     testing-type: integration
     test-deps: ansible.netcommon
@@ -32,7 +32,7 @@ To use the action add the following step to your workflow file (e.g.
   with:
     ansible-core-version: stable-2.14
     pre-test-cmd: echo This runs before the ansible-test invocation
-    target-python-version: 3.9
+    target-python-version: 3.11
     testing-type: units
     test-deps: >-
       ansible.netcommon
