@@ -179,7 +179,9 @@ runs:
               'stable-2.14': (3, 11),
               'stable-2.15': (3, 11),
           }
-          python_version_fallback_for_devel = max(set(python_version_map.values()))
+          python_version_fallback_for_devel = max(
+              set(python_version_map.values()),
+          )
           origin_python_version_tuple = python_version_map.get(
               ansible_core_version,
               # For any non-stable branch, we assume
