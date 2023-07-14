@@ -588,6 +588,24 @@ runs:
   - name: Log the next step action
     if: steps.ansible-test-flags.outputs.coverage-arg != ''
     run: >-
+      echo ▷ Generating a coverage report only grouped by command...
+    shell: bash
+  - name: Generate a coverage report only grouped by command
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    run: >-
+      set -x
+      ;
+      ~/.local/bin/ansible-test coverage xml
+      -v --requirements
+      --group-by command
+      ;
+      set +x
+    shell: bash
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
+
+  - name: Log the next step action
+    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    run: >-
       echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
     shell: bash
@@ -626,12 +644,12 @@ runs:
     run: >-
       set +x
       ;
-      compgen -G "${{
+      ls -1 '${{
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/reports/coverage=${{
         inputs.testing-type
-      }}=*.xml"
-      && ( echo "present=true" >> ${GITHUB_OUTPUT} )
+      }}.xml'
+      && ( echo "present=true" >> "${GITHUB_OUTPUT}" )
       ;
       exit 0
     shell: bash
@@ -645,7 +663,7 @@ runs:
           steps.collection-metadata.outputs.checkout-path
         }}/tests/output/reports/coverage=${{
           inputs.testing-type
-        }}=python-*.xml
+        }}.xml
       format: markdown
       output: both
   # Ref: https://github.com/irongut/CodeCoverageSummary/issues/66
