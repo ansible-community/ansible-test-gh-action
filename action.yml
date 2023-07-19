@@ -223,8 +223,9 @@ runs:
       ;
       python -m
       pip install
-      'PyYAML>5,<6'
+      PyYAML
       --disable-pip-version-check
+      --prefer-binary
       --user
       ;
       set +x
