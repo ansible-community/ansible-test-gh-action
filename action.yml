@@ -653,6 +653,7 @@ runs:
         inputs.testing-type
       }}.xml'
       && ( echo "present=true" >> "${GITHUB_OUTPUT}" )
+      || ( echo "present=false" >> "${GITHUB_OUTPUT}" )
       ;
       exit 0
     shell: bash
