@@ -1,0 +1,4 @@
+---
+- name: Do nothing
+  ansible.builtin.debug:
+    msg: Hello world.

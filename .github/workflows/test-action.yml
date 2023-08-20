@@ -125,6 +125,16 @@ jobs:
           test-deps: >-
             git+https://github.com/ansible-collections/ansible.utils.git
             git+https://github.com/ansible-collections/ansible.netcommon.git
+        - ansible-core-version: stable-2.15
+          collection-root: .internal/ansible/ansible_collections/internal/test2
+          collection-src-directory: ./.tmp-action-checkout
+          coverage: always
+          integration-continue-on-error: true
+          integration-diff: false
+          integration-retry-on-error: true
+          origin-python-version: >-
+            3.11
+          testing-type: integration
     steps:
     - name: Checkout
       uses: actions/checkout@v3

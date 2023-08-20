@@ -1,0 +1,8 @@
+---
+namespace: internal
+name: test2
+description: Another collection internal to this repository for running tests.
+version: 0.1.0
+readme: README.md
+authors:
+- Felix Fontein (@felixfontein)
