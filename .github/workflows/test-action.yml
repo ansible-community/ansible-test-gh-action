@@ -127,7 +127,7 @@ jobs:
             git+https://github.com/ansible-collections/ansible.netcommon.git
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: .tmp-action-checkout/
 
