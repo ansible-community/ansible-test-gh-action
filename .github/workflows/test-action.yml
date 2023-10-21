@@ -2,6 +2,7 @@
 name: 🧪
 
 on:   # yamllint disable-line rule:truthy
+  merge_group:
   push:
   pull_request:
 
