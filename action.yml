@@ -206,7 +206,7 @@ runs:
       Set controller Python to
       ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
     id: setup-python
-    uses: actions/setup-python@v4
+    uses: actions/setup-python@v5
     with:
       python-version: >-
         ${{
