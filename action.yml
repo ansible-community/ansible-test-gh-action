@@ -86,12 +86,14 @@ inputs:
       Replace `python-version` with `origin-python-version`.
       It is scheduled to be removed in version 3 of this action.
   sanity-tests:
-    description: Comma-separated list of sanity tests to run. If not present, all applicable tests are run.
+    description: >-
+      Comma-separated list of sanity tests to run.
+      If not present, all applicable tests are run.
   sanity-skip-tests:
     description: Comma-separated list of sanity tests to skip.
   sanity-allow-disabled:
     description: Allow sanity tests to run which are disabled by default.
-    default: false
+    default: 'false'
   target:
     description: ansible-test TARGET
   target-python-version:
@@ -251,11 +253,13 @@ runs:
       GHA_CONTROLLER_PYTHON_VERSION: ${{ inputs.controller-python-version }}
       GHA_COVERAGE: ${{ inputs.coverage }}
       GHA_DOCKER_IMAGE: ${{ inputs.docker-image }}
-      GHA_INTEGRATION_CONTINUE_ON_ERROR: ${{ inputs.integration-continue-on-error }}
+      GHA_INTEGRATION_CONTINUE_ON_ERROR: >-
+        ${{ inputs.integration-continue-on-error }}
       GHA_INTEGRATION_DIFF: ${{ inputs.integration-diff }}
       GHA_INTEGRATION_RETRY_ON_ERROR: ${{ inputs.integration-retry-on-error }}
       GHA_PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref || '' }}
-      GHA_PULL_REQUEST_CHANGE_DETECTION: ${{ inputs.pull-request-change-detection }}
+      GHA_PULL_REQUEST_CHANGE_DETECTION: >-
+        ${{ inputs.pull-request-change-detection }}
       GHA_SANITY_TESTS: ${{ inputs.sanity-tests }}
       GHA_SANITY_SKIP_TESTS: ${{ inputs.sanity-skip-tests }}
       GHA_SANITY_ALLOW_DISABLED: ${{ inputs.sanity-allow-disabled }}
@@ -279,17 +283,23 @@ runs:
       # Input from GHA
       gha_ansible_core_version = os.environ['GHA_ANSIBLE_CORE_VERSION']
       gha_container_network = os.environ['GHA_CONTAINER_NETWORK']
-      gha_controller_python_version = os.environ['GHA_CONTROLLER_PYTHON_VERSION']
+      gha_controller_python_version = (
+          os.environ['GHA_CONTROLLER_PYTHON_VERSION']
+      )
       gha_coverage = os.environ['GHA_COVERAGE']
       gha_docker_image = os.environ['GHA_DOCKER_IMAGE']
-      gha_integration_continue_on_error = json.loads(os.environ['GHA_INTEGRATION_CONTINUE_ON_ERROR'])
+      gha_integration_continue_on_error = json.loads(
+          os.environ['GHA_INTEGRATION_CONTINUE_ON_ERROR'])
       gha_integration_diff = json.loads(os.environ['GHA_INTEGRATION_DIFF'])
-      gha_integration_retry_on_error = json.loads(os.environ['GHA_INTEGRATION_RETRY_ON_ERROR'])
+      gha_integration_retry_on_error = json.loads(
+          os.environ['GHA_INTEGRATION_RETRY_ON_ERROR'])
       gha_pull_request_branch = os.environ['GHA_PULL_REQUEST_BASE_REF']
-      gha_pull_request_change_detection = json.loads(os.environ['GHA_PULL_REQUEST_CHANGE_DETECTION'])
+      gha_pull_request_change_detection = json.loads(
+          os.environ['GHA_PULL_REQUEST_CHANGE_DETECTION'])
       gha_sanity_tests = os.environ['GHA_SANITY_TESTS']
       gha_sanity_skip_tests = os.environ['GHA_SANITY_SKIP_TESTS']
-      gha_sanity_allow_disabled = json.loads(os.environ['GHA_SANITY_ALLOW_DISABLED'])
+      gha_sanity_allow_disabled = json.loads(
+          os.environ['GHA_SANITY_ALLOW_DISABLED'])
       gha_target = os.environ['GHA_TARGET']
       gha_target_python_version = os.environ['GHA_TARGET_PYTHON_VERSION']
       gha_testing_type = os.environ['GHA_TESTING_TYPE']
@@ -306,7 +316,9 @@ runs:
       command = [gha_testing_type, '-v', '--color']
 
       # Compute coverage and change detection arguments
-      has_change_detection = gha_pull_request_branch and gha_pull_request_change_detection
+      has_change_detection = (
+          gha_pull_request_branch and gha_pull_request_change_detection
+      )
       if has_change_detection:
           if gha_coverage == 'auto':
               print(
@@ -353,15 +365,20 @@ runs:
 
       if (
           gha_testing_type == 'integration'
-          and gha_ansible_core_version not in {'stable-2.9', 'stable-2.10', 'stable-2.11'}
+          and gha_ansible_core_version not in {
+              'stable-2.9', 'stable-2.10', 'stable-2.11'
+          }
           and gha_target_python_version
-          and gha_controller_python_version not in {'auto', gha_target_python_version}
+          and gha_controller_python_version not in {
+              'auto', gha_target_python_version
+          }
       ):
           command.extend([
               '--controller',
               f"docker:default,python={gha_controller_python_version}",
               '--target',
-              f"docker:{gha_docker_image or 'default'},python={gha_target_python_version}",
+              f"docker:{gha_docker_image or 'default'},"
+              f"python={gha_target_python_version}",
           ])
       else:
           command.extend([
