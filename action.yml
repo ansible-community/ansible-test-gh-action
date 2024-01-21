@@ -232,15 +232,32 @@ runs:
     shell: bash
 
   - name: Log the next step action
-    run: echo ▷ Figuring out ansible-test flags
+    run: >-
+      echo ▷ Compose the ansible-test command line
     shell: bash
-  - name: Determine ansible-test flags
-    id: ansible-test-flags
+  - name: Compose the ansible-test command line
+    id: ansible-test-command
+    env:
+      GHA_ANSIBLE_CORE_VERSION: ${{ inputs.ansible-core-version }}
+      GHA_CONTAINER_NETWORK: ${{ job.container.network }}
+      GHA_CONTROLLER_PYTHON_VERSION: ${{ inputs.controller-python-version }}
+      GHA_COVERAGE: ${{ inputs.coverage }}
+      GHA_DOCKER_IMAGE: ${{ inputs.docker-image }}
+      GHA_INTEGRATION_CONTINUE_ON_ERROR: >-
+        ${{ inputs.integration-continue-on-error }}
+      GHA_INTEGRATION_DIFF: ${{ inputs.integration-diff }}
+      GHA_INTEGRATION_RETRY_ON_ERROR: ${{ inputs.integration-retry-on-error }}
+      GHA_PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref || '' }}
+      GHA_PULL_REQUEST_CHANGE_DETECTION: >-
+        ${{ inputs.pull-request-change-detection }}
+      GHA_TARGET: ${{ inputs.target }}
+      GHA_TARGET_PYTHON_VERSION: ${{ inputs.target-python-version }}
+      GHA_TESTING_TYPE: ${{ inputs.testing-type }}
     run: |
-      # Compute whether to use change detection and coverage
       import json
       import os
       import pathlib
+      import shlex
       import sys
 
       FILE_APPEND_MODE = 'a'
@@ -251,54 +268,107 @@ runs:
               outputs_file.writelines(f'{name}={value}{os.linesep}')
 
       # Input from GHA
-      pull_request_change_detection = json.loads('${{
-        inputs.pull-request-change-detection
-      }}')
-      pull_request_branch = '${{ github.event.pull_request.base.ref || '' }}'
-      coverage = '${{ inputs.coverage }}'
-      integration_continue_on_error = json.loads('${{
-        inputs.integration-continue-on-error
-      }}')
-      integration_diff = json.loads('${{ inputs.integration-diff }}')
-      integration_retry_on_error = json.loads('${{
-        inputs.integration-retry-on-error
-      }}')
+      gha_ansible_core_version = os.environ['GHA_ANSIBLE_CORE_VERSION']
+      gha_container_network = os.environ['GHA_CONTAINER_NETWORK']
+      gha_controller_python_version = (
+          os.environ['GHA_CONTROLLER_PYTHON_VERSION']
+      )
+      gha_coverage = os.environ['GHA_COVERAGE']
+      gha_docker_image = os.environ['GHA_DOCKER_IMAGE']
+      gha_integration_continue_on_error = json.loads(
+          os.environ['GHA_INTEGRATION_CONTINUE_ON_ERROR']
+      )
+      gha_integration_diff = json.loads(
+          os.environ['GHA_INTEGRATION_DIFF']
+      )
+      gha_integration_retry_on_error = json.loads(
+          os.environ['GHA_INTEGRATION_RETRY_ON_ERROR']
+      )
+      gha_pull_request_branch = os.environ['GHA_PULL_REQUEST_BASE_REF']
+      gha_pull_request_change_detection = json.loads(
+          os.environ['GHA_PULL_REQUEST_CHANGE_DETECTION']
+      )
+      gha_target = os.environ['GHA_TARGET']
+      gha_target_python_version = os.environ['GHA_TARGET_PYTHON_VERSION']
+      gha_testing_type = os.environ['GHA_TESTING_TYPE']
 
       # Validate GHA inputs
-      if coverage not in {'always', 'never', 'auto'}:
+      if gha_coverage not in {'always', 'never', 'auto'}:
           print(
               '::error ::`coverage` must have one of the values `always`,'
-              f' `never`, or `auto`.  The current value is `{coverage}`.'
+              f' `never`, or `auto`.  The current value is `{gha_coverage}`.'
           )
           sys.exit(1)
 
+      # Compose ansible-test arguments
+      command = [gha_testing_type, '-v', '--color']
+
       # Compute coverage and change detection arguments
-      coverage_arg = '' if coverage == 'never' else '--coverage'
-      change_detection_arg = ''
-      if pull_request_branch and pull_request_change_detection:
-          if coverage == 'auto':
+      has_change_detection = (
+          gha_pull_request_branch and gha_pull_request_change_detection
+      )
+      if has_change_detection:
+          if gha_coverage == 'auto':
               print(
                   'Disabling coverage reporting due to pull request '
                   'change detection being enabled.',
               )
-              coverage_arg = ''
-          change_detection_arg = (
-              f'--changed --base-branch {pull_request_branch}'
-          )
+              gha_coverage = 'never'
+          command.extend([
+              '--changed',
+              '--base-branch',
+              gha_pull_request_branch,
+          ])
+      has_coverage = gha_coverage != 'never'
+      if has_coverage:
+          command.append('--coverage')
 
-      # Determine integration test flags
-      integration_flags = []
-      if integration_retry_on_error:
-          integration_flags.append('--retry-on-error')
-      if integration_continue_on_error:
-          integration_flags.append('--continue-on-error')
-      if integration_diff:
-          integration_flags.append('--diff')
+      if gha_testing_type == 'sanity':
+          command.append('--junit')
 
-      # Set computed coverage-arg and change-detection-arg
-      set_output('coverage-arg', coverage_arg)
-      set_output('change-detection-arg', change_detection_arg)
-      set_output('integration-flags', ' '.join(integration_flags))
+      if gha_testing_type == 'integration':
+          if gha_integration_retry_on_error:
+              command.append('--retry-on-error')
+          if gha_integration_continue_on_error:
+              command.append('--continue-on-error')
+          if gha_integration_diff:
+              command.append('--diff')
+          if gha_container_network != '':
+              command.append(f"--docker-network={gha_container_network}")
+
+      if (
+          gha_testing_type == 'integration'
+          and gha_ansible_core_version not in {
+              'stable-2.9', 'stable-2.10', 'stable-2.11'
+          }
+          and gha_target_python_version
+          and gha_controller_python_version not in {
+              'auto', gha_target_python_version
+          }
+      ):
+          command.extend([
+              '--controller',
+              f"docker:default,python={gha_controller_python_version}",
+              '--target',
+              f"docker:{gha_docker_image or 'default'},"
+              f"python={gha_target_python_version}",
+          ])
+      else:
+          command.extend([
+              '--docker',
+              gha_docker_image or 'default',
+          ])
+          if gha_target_python_version:
+              command.extend([
+                  '--python',
+                  gha_target_python_version,
+              ])
+
+      command.extend(shlex.split(gha_target))
+
+      set_output('command', shlex.join(command))
+      set_output('has-coverage', json.dumps(has_coverage))
+      set_output('has-change-detection', json.dumps(has_change_detection))
     shell: python
 
   - name: Log the next step action
@@ -317,21 +387,21 @@ runs:
       ref: ${{ inputs.git-checkout-ref }}
       fetch-depth: >-
         ${{
-          steps.ansible-test-flags.outputs.change-detection-arg
+          steps.ansible-test-command.outputs.has-change-detection == 'true'
           && '0' || '1'
         }}
 
   - name: Log the next step action
     if: >-
       !inputs.collection-src-directory
-      && steps.ansible-test-flags.outputs.change-detection-arg
+      && steps.ansible-test-command.outputs.has-change-detection == 'true'
     run: >-
       echo ▷ Create branches for change detection
     shell: bash
   - name: Create branches for change detection
     if: >-
       !inputs.collection-src-directory
-      && steps.ansible-test-flags.outputs.change-detection-arg
+      && steps.ansible-test-command.outputs.has-change-detection == 'true'
     run: |
       # Create a branch for the current HEAD, which happens to be a merge commit
       git checkout -b 'pull-request-${{ github.event.pull_request.number }}'
@@ -517,52 +587,7 @@ runs:
     run: >-
       set -x
       ;
-      ~/.local/bin/ansible-test ${{ inputs.testing-type }}
-      -v --color
-      ${{ steps.ansible-test-flags.outputs.coverage-arg }}
-      ${{ steps.ansible-test-flags.outputs.change-detection-arg }}
-      ${{
-          inputs.testing-type == 'sanity'
-          && '--junit'
-          || ''
-      }}
-      ${{
-          inputs.testing-type == 'integration'
-          && steps.ansible-test-flags.outputs.integration-flags
-          || ''
-      }}
-      ${{
-          inputs.testing-type == 'integration'
-          && inputs.ansible-core-version != 'stable-2.9'
-          && inputs.ansible-core-version != 'stable-2.10'
-          && inputs.ansible-core-version != 'stable-2.11'
-          && inputs.target-python-version
-          && inputs.controller-python-version != 'auto'
-          && inputs.controller-python-version != inputs.target-python-version
-          && format(
-              '--controller docker:default,python={0} --target docker:{1},python={2}',
-              inputs.controller-python-version,
-              inputs.docker-image || 'default',
-              inputs.target-python-version
-          )
-          || inputs.target-python-version
-          && format(
-              '--docker {0} --python {1}',
-              inputs.docker-image,
-              inputs.target-python-version
-          )
-          || format(
-              '--docker {0}',
-              inputs.docker-image
-          )
-      }}
-      ${{
-          inputs.testing-type == 'integration'
-          && job.container.network != ''
-          && format('--docker-network={0}', job.container.network)
-          || ''
-      }}
-      ${{ inputs.target }}
+      ~/.local/bin/ansible-test ${{ steps.ansible-test-command.outputs.command }}
       ;
       set +x
     # yamllint enable rule:line-length
@@ -570,12 +595,12 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
       echo ▷ Generating a coverage report...
     shell: bash
   - name: Generate coverage report
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
       set -x
       ;
@@ -589,7 +614,7 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
       echo ▷ Generating a coverage report only grouped by command...
     shell: bash
@@ -615,7 +640,7 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     uses: codecov/codecov-action@v3
     with:
       files: >-
