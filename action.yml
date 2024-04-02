@@ -304,7 +304,7 @@ runs:
       gha_sanity_skip_tests = os.environ['GHA_SANITY_SKIP_TESTS']
       gha_sanity_allow_disabled = json.loads(
           os.environ['GHA_SANITY_ALLOW_DISABLED']
-      )
+      ) is True
       gha_target = os.environ['GHA_TARGET']
       gha_target_python_version = os.environ['GHA_TARGET_PYTHON_VERSION']
       gha_testing_type = os.environ['GHA_TESTING_TYPE']

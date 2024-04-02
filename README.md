@@ -226,7 +226,8 @@ Comma-separated list of sanity tests to skip.
 
 ### `sanity-allow-disabled`
 
-Allow sanity tests to run which are disabled by default.
+Allow running sanity tests that are disabled by default.
+**(DEFAULT: `false`)**
 
 
 ## Related community projects
