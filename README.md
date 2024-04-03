@@ -214,6 +214,22 @@ The [`python-path` output value][`python-path`] of the [setup-python] action
 The actual value of `origin-python-version` passed to the [setup-python] action
 
 
+### `sanity-tests`
+
+Comma-separated list of sanity tests to run. If not present, all applicable tests are run.
+
+
+### `sanity-skip-tests`
+
+Comma-separated list of sanity tests to skip.
+
+
+### `sanity-allow-disabled`
+
+Allow running sanity tests that are disabled by default.
+**(DEFAULT: `false`)**
+
+
 ## Related community projects
 
 Check out the [Data-Bene/ansible-test-versions-gh-action] to explore

@@ -85,6 +85,15 @@ inputs:
     deprecationMessage: >-
       Replace `python-version` with `origin-python-version`.
       It is scheduled to be removed in version 3 of this action.
+  sanity-tests:
+    description: >-
+      Comma-separated list of sanity tests to run.
+      If not present, all applicable tests are run.
+  sanity-skip-tests:
+    description: Comma-separated list of sanity tests to skip.
+  sanity-allow-disabled:
+    description: Allow sanity tests to run which are disabled by default.
+    default: 'false'
   target:
     description: ansible-test TARGET
   target-python-version:
@@ -250,6 +259,9 @@ runs:
       GHA_PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref || '' }}
       GHA_PULL_REQUEST_CHANGE_DETECTION: >-
         ${{ inputs.pull-request-change-detection }}
+      GHA_SANITY_TESTS: ${{ inputs.sanity-tests }}
+      GHA_SANITY_SKIP_TESTS: ${{ inputs.sanity-skip-tests }}
+      GHA_SANITY_ALLOW_DISABLED: ${{ inputs.sanity-allow-disabled }}
       GHA_TARGET: ${{ inputs.target }}
       GHA_TARGET_PYTHON_VERSION: ${{ inputs.target-python-version }}
       GHA_TESTING_TYPE: ${{ inputs.testing-type }}
@@ -288,6 +300,11 @@ runs:
       gha_pull_request_change_detection = json.loads(
           os.environ['GHA_PULL_REQUEST_CHANGE_DETECTION']
       )
+      gha_sanity_tests = os.environ['GHA_SANITY_TESTS']
+      gha_sanity_skip_tests = os.environ['GHA_SANITY_SKIP_TESTS']
+      gha_sanity_allow_disabled = json.loads(
+          os.environ['GHA_SANITY_ALLOW_DISABLED']
+      ) is True
       gha_target = os.environ['GHA_TARGET']
       gha_target_python_version = os.environ['GHA_TARGET_PYTHON_VERSION']
       gha_testing_type = os.environ['GHA_TESTING_TYPE']
@@ -325,6 +342,21 @@ runs:
 
       if gha_testing_type == 'sanity':
           command.append('--junit')
+
+          if gha_sanity_tests:
+              for test in gha_sanity_tests.split(','):
+                  command.extend([
+                      '--test',
+                      test.strip(),
+                  ])
+          if gha_sanity_skip_tests:
+              for test in gha_sanity_skip_tests.split(','):
+                  command.extend([
+                      '--skip-test',
+                      test.strip(),
+                  ])
+          if gha_sanity_allow_disabled:
+              command.append('--allow-disabled')
 
       if gha_testing_type == 'integration':
           if gha_integration_retry_on_error:
