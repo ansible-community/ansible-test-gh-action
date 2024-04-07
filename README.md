@@ -89,6 +89,11 @@ Whether to collect and upload coverage information. Can be set to
 information except when `pull-request-change-detection` is set to `true`
 and the action is called from a Pull Request. **(DEFAULT: `auto`)**
 
+> [!NOTE]
+> Coverage is only generated for modules and plugins. If your collection does
+> not contain any modules or plugins, set this to `never` to avoid errors in
+> the codecov upload step due to no coverage information being available.
+
 
 ### `docker-image`
 
