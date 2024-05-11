@@ -18,6 +18,9 @@ inputs:
   ansible-core-github-repository-slug:
     description: The GitHub repository slug from which to check out ansible-core
     default: ansible/ansible
+  codecov-token:
+    description: >-
+      The Codecov token to use when uploading coverage data.
   controller-python-version:
     description: >-
       Controller Python version. Only used for integration tests and
@@ -682,6 +685,7 @@ runs:
           inputs.testing-type
         }}=*.xml
       flags: ${{ inputs.testing-type }}
+      token: ${{ inputs.codecov-token }}
 
   - name: Produce markdown test summary from JUnit
     if: always()
