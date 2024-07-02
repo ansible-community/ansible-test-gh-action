@@ -69,6 +69,11 @@ ansible-core 2.12 or later when `target-python-version` is also specified
 **(DEFAULT: `auto`)**
 
 
+### `codecov-token`
+
+The Codecov token to use when uploading coverage data. **(OPTIONAL)**
+
+
 ### `collection-root`
 
 Path to collection root relative to repository root **(DEFAULT: `.`)**
