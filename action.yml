@@ -654,7 +654,7 @@ runs:
       echo ▷ Generating a coverage report only grouped by command...
     shell: bash
   - name: Generate a coverage report only grouped by command
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
       set -x
       ;
@@ -667,7 +667,7 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
-    if: steps.ansible-test-flags.outputs.coverage-arg != ''
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
       echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
