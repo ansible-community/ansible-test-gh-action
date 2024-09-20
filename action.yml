@@ -127,6 +127,11 @@ outputs:
   collection-namespace:
     description: Detected collection namespace
     value: ${{ steps.collection-metadata.outputs.namespace }}
+  coverage-report-files:
+    description: >-
+      A comma-separated list of produced Cobertura XML coverage
+      report file paths
+    value: ${{ steps.exportable-coverage-files.outputs.paths || '' }}
   origin-python-path:
     description: >-
       The [`python-path` output
@@ -648,6 +653,24 @@ runs:
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
+  - name: Identify a list of Cobertura XML coverage files
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
+    id: exportable-coverage-files
+    run: >-
+      set +x
+      ;
+      echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
+      ;
+      $(
+      find '${{
+        steps.collection-metadata.outputs.checkout-path
+      }}/tests/output/reports/' -name 'coverage=${{
+        inputs.testing-type
+      }}.xml' -type f -print0
+      | tr '\0' ','
+      | sed 's#,$##'
+      ) | tee -a "${GITHUB_OUTPUT}"
+
   - name: Log the next step action
     if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
@@ -667,7 +690,7 @@ runs:
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
-    if: steps.ansible-test-command.outputs.has-coverage == 'true'
+    if: steps.exportable-coverage-files.outputs.paths != ''
     run: >-
       echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
@@ -675,15 +698,10 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
-    if: steps.ansible-test-command.outputs.has-coverage == 'true'
+    if: steps.exportable-coverage-files.outputs.paths != ''
     uses: codecov/codecov-action@v4.5.0
     with:
-      files: >-
-        ${{
-          steps.collection-metadata.outputs.checkout-path
-        }}/tests/output/reports/coverage=${{
-          inputs.testing-type
-        }}=*.xml
+      files: ${{ steps.exportable-coverage-files.outputs.paths }}
       flags: ${{ inputs.testing-type }}
       token: ${{ inputs.codecov-token }}
       working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}

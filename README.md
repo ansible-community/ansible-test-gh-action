@@ -214,6 +214,11 @@ Detected collection name
 Detected collection namespace
 
 
+### `coverage-report-files`
+
+A comma-separated list of produced Cobertura XML coverage report file paths
+
+
 ### `origin-python-path`
 
 The [`python-path` output value][`python-path`] of the [setup-python] action
