@@ -163,32 +163,9 @@ jobs:
         testing-type: ${{ matrix.testing-type }}
         test-deps: ${{ matrix.test-deps }}
 
-    - name: Log the outputs
+    - name: 📝 Log all the action outputs
       run: |
-        echo "ansible-playbook-executable=${{
-          steps.tests.outputs.ansible-playbook-executable
-        }}"
-        echo "ansible-test-executable=${{
-          steps.tests.outputs.ansible-test-executable
-        }}"
-        echo "checkout-directory=${{
-          steps.tests.outputs.checkout-directory
-        }}"
-        echo "collection-fqcn=${{
-          steps.tests.outputs.collection-fqcn
-        }}"
-        echo "collection-name=${{
-          steps.tests.outputs.collection-name
-        }}"
-        echo "collection-namespace=${{
-          steps.tests.outputs.collection-namespace
-        }}"
-        echo "origin-python-path=${{
-          steps.tests.outputs.origin-python-path
-        }}"
-        echo "origin-python-version=${{
-          steps.tests.outputs.origin-python-version
-        }}"
+        echo '${{ toJSON(steps.tests.outputs) }}'
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
