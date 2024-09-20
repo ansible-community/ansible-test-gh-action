@@ -652,6 +652,8 @@ runs:
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
+    shell: bash
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
     if: steps.ansible-test-command.outputs.has-coverage == 'true'
@@ -689,6 +691,8 @@ runs:
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
+    shell: bash
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Log the next step action
     if: steps.ansible-test-command.outputs.has-coverage == 'true'
