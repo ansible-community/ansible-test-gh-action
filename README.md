@@ -62,16 +62,16 @@ The GitHub repository slug from which to check out ansible-core
 **(DEFAULT: `ansible/ansible`)**
 
 
+### `codecov-token`
+
+The Codecov token to use when uploading coverage data. **(OPTIONAL)**
+
+
 ### `controller-python-version`
 
 Controller Python version. This is only used for integration tests and
 ansible-core 2.12 or later when `target-python-version` is also specified
 **(DEFAULT: `auto`)**
-
-
-### `codecov-token`
-
-The Codecov token to use when uploading coverage data. **(OPTIONAL)**
 
 
 ### `collection-root`
