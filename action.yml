@@ -652,7 +652,7 @@ runs:
       }}/tests/output/junit/' -name '*.xml' -type f -print0
       || :
       )
-      | tr '\\0' ','
+      | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
     shell: bash
@@ -693,7 +693,7 @@ runs:
       }}.xml' -type f -print0
       || :
       )
-      | tr '\\0' ','
+      | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
     shell: bash
