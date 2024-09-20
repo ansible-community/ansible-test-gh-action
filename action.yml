@@ -649,11 +649,10 @@ runs:
       find '${{
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/junit/' -name '*.xml' -type f -print0
+      || :
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
-      ;
-      exit 0
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
@@ -690,11 +689,10 @@ runs:
       }}/tests/output/reports/' -name 'coverage=${{
         inputs.testing-type
       }}.xml' -type f -print0
+      || :
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
-      ;
-      exit 0
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
