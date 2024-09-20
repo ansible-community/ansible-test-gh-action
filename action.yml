@@ -646,10 +646,12 @@ runs:
       echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
       ;
       $(
+      (
       find '${{
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/junit/' -name '*.xml' -type f -print0
       || :
+      )
       | tr '\\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
@@ -683,12 +685,14 @@ runs:
       echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
       ;
       $(
+      (
       find '${{
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/reports/' -name 'coverage=${{
         inputs.testing-type
       }}.xml' -type f -print0
       || :
+      )
       | tr '\\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
