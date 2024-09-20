@@ -650,7 +650,7 @@ runs:
         steps.collection-metadata.outputs.checkout-path
       }}/tests/output/junit/' -name '*.xml' -type f -print0
       || :
-      | tr '\0' ','
+      | tr '\\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
     shell: bash
@@ -689,7 +689,7 @@ runs:
         inputs.testing-type
       }}.xml' -type f -print0
       || :
-      | tr '\0' ','
+      | tr '\\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
     shell: bash
