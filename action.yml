@@ -652,6 +652,8 @@ runs:
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
+      ;
+      exit 0
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
@@ -691,6 +693,8 @@ runs:
       | tr '\0' ','
       | sed 's#,$##'
       ) | tee -a "${GITHUB_OUTPUT}"
+      ;
+      exit 0
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
