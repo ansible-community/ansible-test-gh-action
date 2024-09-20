@@ -165,7 +165,12 @@ jobs:
 
     - name: 📝 Log all the action outputs
       run: |
-        echo '${{ toJSON(steps.tests.outputs) }}'
+        echo '# 🤖 Action outputs as JSON:' >> "${GITHUB_STEP_SUMMARY}"
+        echo >> "${GITHUB_STEP_SUMMARY}"
+        echo '```json' >> "${GITHUB_STEP_SUMMARY}"
+        echo '${{ toJSON(steps.tests.outputs) }}' \
+          | tee -a "${GITHUB_STEP_SUMMARY}"
+        echo '```' >> "${GITHUB_STEP_SUMMARY}"
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
