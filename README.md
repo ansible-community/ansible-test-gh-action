@@ -245,6 +245,11 @@ The [`python-path` output value][`python-path`] of the [setup-python] action
 The actual value of `origin-python-version` passed to the [setup-python] action
 
 
+### `test-result-files`
+
+A comma-separated list of produced JUnit XML test result file paths
+
+
 ## Related community projects
 
 Check out the [Data-Bene/ansible-test-versions-gh-action] to explore

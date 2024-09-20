@@ -145,6 +145,10 @@ outputs:
       [setup-python](https://github.com/actions/setup-python/#readme) action.
     value: >-
       ${{ steps.compute-origin-python-version.outputs.origin-python-version }}
+  test-result-files:
+    description: >-
+      A comma-separated list of produced JUnit XML test result file paths
+    value: ${{ steps.exportable-junit-files.outputs.paths || '' }}
 runs:
   using: composite
   steps:
@@ -634,6 +638,21 @@ runs:
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
+  - name: Identify a list of Junit XML test report files
+    id: exportable-junit-files
+    run: >-
+      set +x
+      ;
+      echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
+      ;
+      $(
+      find '${{
+        steps.collection-metadata.outputs.checkout-path
+      }}/tests/output/junit/' -name '*.xml' -type f -print0
+      | tr '\0' ','
+      | sed 's#,$##'
+      ) | tee -a "${GITHUB_OUTPUT}"
+
   - name: Log the next step action
     if: steps.ansible-test-command.outputs.has-coverage == 'true'
     run: >-
@@ -707,7 +726,9 @@ runs:
       working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
   - name: Produce markdown test summary from JUnit
-    if: always()
+    if: >-
+      always()
+      && steps.exportable-junit-files.outputs.paths != ''
     uses: test-summary/action@v2
     with:
       # NOTE: The path is borrowed from
