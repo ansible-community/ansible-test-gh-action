@@ -160,6 +160,22 @@ repository checkout where `collection-root` is `.`. **(DEFAULT: `false`)**
 **(DEPRECATED)** Use `origin-python-version` instead.
 
 
+### `sanity-tests`
+
+Comma-separated list of sanity tests to run. If not present, all applicable tests are run.
+
+
+### `sanity-skip-tests`
+
+Comma-separated list of sanity tests to skip.
+
+
+### `sanity-allow-disabled`
+
+Allow running sanity tests that are disabled by default.
+**(DEFAULT: `false`)**
+
+
 ### `target`
 
 `ansible-test` TARGET **(OPTIONAL)**
@@ -227,22 +243,6 @@ The [`python-path` output value][`python-path`] of the [setup-python] action
 ### `origin-python-version`
 
 The actual value of `origin-python-version` passed to the [setup-python] action
-
-
-### `sanity-tests`
-
-Comma-separated list of sanity tests to run. If not present, all applicable tests are run.
-
-
-### `sanity-skip-tests`
-
-Comma-separated list of sanity tests to skip.
-
-
-### `sanity-allow-disabled`
-
-Allow running sanity tests that are disabled by default.
-**(DEFAULT: `false`)**
 
 
 ## Related community projects
