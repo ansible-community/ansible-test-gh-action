@@ -377,6 +377,8 @@ runs:
               command.append('--continue-on-error')
           if gha_integration_diff:
               command.append('--diff')
+
+      if gha_testing_type == 'integration' or gha_testing_type == 'unit':
           if gha_container_network != '':
               command.append(f"--docker-network={gha_container_network}")
 
