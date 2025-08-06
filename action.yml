@@ -732,7 +732,7 @@ runs:
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
     if: steps.exportable-coverage-files.outputs.paths != ''
-    uses: codecov/codecov-action@v4.5.0
+    uses: codecov/codecov-action@v5.4.3
     with:
       files: ${{ steps.exportable-coverage-files.outputs.paths }}
       flags: ${{ inputs.testing-type }}
