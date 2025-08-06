@@ -651,7 +651,7 @@ runs:
       ;
       echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
       ;
-      $(
+      (
       (
       find '${{
         steps.collection-metadata.outputs.checkout-path
@@ -690,7 +690,7 @@ runs:
       ;
       echo -n "paths=" | tee -a "${GITHUB_OUTPUT}"
       ;
-      $(
+      (
       (
       find '${{
         steps.collection-metadata.outputs.checkout-path
