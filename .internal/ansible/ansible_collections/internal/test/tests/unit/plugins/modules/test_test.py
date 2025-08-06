@@ -19,6 +19,18 @@ try:
 except ImportError:
     import mock
 
+try:
+    # With data tagging support (ansible-core >= 2.19), we have a new helper:
+    # pylint: disable-next=ungrouped-imports
+    from ansible.module_utils.testing import patch_module_args
+except ImportError:
+    @contextlib.contextmanager
+    def patch_module_args(args):
+        # Before data tagging support was merged, this was the way to go:
+        serialized_args = to_bytes(json.dumps({'ANSIBLE_MODULE_ARGS': args}))
+        with mock.patch.object(basic, '_ANSIBLE_ARGS', serialized_args):
+            yield
+
 
 @contextlib.contextmanager
 def set_module_args(args):
@@ -30,18 +42,8 @@ def set_module_args(args):
     if '_ansible_keep_remote_files' not in args:
         args['_ansible_keep_remote_files'] = False
 
-    try:
-        from ansible.module_utils.testing import patch_module_args
-    except ImportError:
-        # Before data tagging support was merged, this was the way to go:
-        from ansible.module_utils import basic
-        serialized_args = to_bytes(json.dumps({'ANSIBLE_MODULE_ARGS': args}))
-        with mock.patch.object(basic, '_ANSIBLE_ARGS', serialized_args):
-            yield
-    else:
-        # With data tagging support, we have a new helper for this:
-        with patch_module_args(args):
-            yield
+    with patch_module_args(args):
+        yield
 
 
 class AnsibleExitJson(Exception):
