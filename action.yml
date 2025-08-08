@@ -21,6 +21,14 @@ inputs:
   codecov-token:
     description: >-
       The Codecov token to use when uploading coverage data.
+  controller-docker-opts:
+    description: |
+      Comma-separated controller docker options.
+      seccomp=default|unconfined
+      cgroup=none|v1-only|v2-only|v1-v2
+      audit=none|required
+      privileged=yes|no
+      memory=<integer>
   controller-python-version:
     description: >-
       Controller Python version. Only used for integration tests and
@@ -44,6 +52,14 @@ inputs:
     default: auto
   docker-image:
     description: Docker image used by ansible-test
+  docker-memory:
+    description: Memory limit for docker in bytes
+  docker-privileged:
+    description: Run docker container in privileged mode
+    default: 'false'
+  docker-seccomp:
+    description: >-
+      Set seccomp confinement for the test container (default, unconfined)
   git-checkout-ref:
     description: >-
       Committish to check out, unused
@@ -99,6 +115,14 @@ inputs:
     default: 'false'
   target:
     description: ansible-test TARGET
+  target-docker-opts:
+    description: |
+      Comma-separated target docker options.
+      seccomp=default|unconfined
+      cgroup=none|v1-only|v2-only|v1-v2
+      audit=none|required
+      privileged=yes|no
+      memory=<integer>
   target-python-version:
     description: Target Python version
   testing-type:
@@ -265,9 +289,13 @@ runs:
     env:
       GHA_ANSIBLE_CORE_VERSION: ${{ inputs.ansible-core-version }}
       GHA_CONTAINER_NETWORK: ${{ job.container.network }}
+      GHA_CONTROLLER_DOCKER_OPTS: ${{ inputs.controller-docker-opts }}
       GHA_CONTROLLER_PYTHON_VERSION: ${{ inputs.controller-python-version }}
       GHA_COVERAGE: ${{ inputs.coverage }}
       GHA_DOCKER_IMAGE: ${{ inputs.docker-image }}
+      GHA_DOCKER_MEMORY: ${{ inputs.docker-memory }}
+      GHA_DOCKER_PRIVILEGED: ${{ inputs.docker-privileged }}
+      GHA_DOCKER_SECCOMP: ${{ inputs.docker-seccomp }}
       GHA_INTEGRATION_CONTINUE_ON_ERROR: >-
         ${{ inputs.integration-continue-on-error }}
       GHA_INTEGRATION_DIFF: ${{ inputs.integration-diff }}
@@ -279,6 +307,7 @@ runs:
       GHA_SANITY_SKIP_TESTS: ${{ inputs.sanity-skip-tests }}
       GHA_SANITY_ALLOW_DISABLED: ${{ inputs.sanity-allow-disabled }}
       GHA_TARGET: ${{ inputs.target }}
+      GHA_TARGET_DOCKER_OPTS: ${{ inputs.target-docker-opts }}
       GHA_TARGET_PYTHON_VERSION: ${{ inputs.target-python-version }}
       GHA_TESTING_TYPE: ${{ inputs.testing-type }}
     run: |
@@ -298,11 +327,15 @@ runs:
       # Input from GHA
       gha_ansible_core_version = os.environ['GHA_ANSIBLE_CORE_VERSION']
       gha_container_network = os.environ['GHA_CONTAINER_NETWORK']
+      gha_controller_docker_opts = os.environ['GHA_CONTROLLER_DOCKER_OPTS']
       gha_controller_python_version = (
           os.environ['GHA_CONTROLLER_PYTHON_VERSION']
       )
       gha_coverage = os.environ['GHA_COVERAGE']
       gha_docker_image = os.environ['GHA_DOCKER_IMAGE']
+      gha_docker_memory = os.environ['GHA_DOCKER_MEMORY']
+      gha_docker_privileged = os.environ['GHA_DOCKER_PRIVILEGED'] == 'true'
+      gha_docker_seccomp = os.environ['GHA_DOCKER_SECCOMP']
       gha_integration_continue_on_error = json.loads(
           os.environ['GHA_INTEGRATION_CONTINUE_ON_ERROR']
       )
@@ -322,6 +355,7 @@ runs:
           os.environ['GHA_SANITY_ALLOW_DISABLED']
       ) is True
       gha_target = os.environ['GHA_TARGET']
+      gha_target_docker_opts = os.environ['GHA_TARGET_DOCKER_OPTS']
       gha_target_python_version = os.environ['GHA_TARGET_PYTHON_VERSION']
       gha_testing_type = os.environ['GHA_TESTING_TYPE']
 
@@ -396,18 +430,38 @@ runs:
               'auto', gha_target_python_version
           }
       ):
-          command.extend([
-              '--controller',
-              f"docker:default,python={gha_controller_python_version}",
-              '--target',
+          controller_opts = (
+              "docker:default,"
+              f"python={gha_controller_python_version}"
+          )
+          if gha_controller_docker_opts:
+              controller_opts += f",{gha_controller_docker_opts}"
+          command.extend(['--controller', controller_opts])
+
+          target_opts = (
               f"docker:{gha_docker_image or 'default'},"
-              f"python={gha_target_python_version}",
-          ])
+              f"python={gha_target_python_version}"
+          )
+          if gha_target_docker_opts:
+              target_opts += f",{gha_target_docker_opts}"
+          command.extend(['--target', target_opts])
       else:
           command.extend([
               '--docker',
               gha_docker_image or 'default',
           ])
+          if gha_docker_privileged:
+              command.append('--docker-privileged')
+          if gha_docker_seccomp:
+              command.extend([
+                  '--docker-seccomp',
+                  gha_docker_seccomp,
+              ])
+          if gha_docker_memory:
+              command.extend([
+                  '--docker-memory',
+                  gha_docker_memory,
+              ])
           if gha_target_python_version:
               command.extend([
                   '--python',
