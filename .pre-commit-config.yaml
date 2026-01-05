@@ -48,7 +48,7 @@ repos:
     files: >-
       ^tests/[^_].*\.py$
   - id: check-added-large-files
-  - id: check-byte-order-marker
+  - id: fix-byte-order-marker
   - id: check-case-conflict
   - id: check-executables-have-shebangs
   - id: check-merge-conflict
