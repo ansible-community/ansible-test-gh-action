@@ -791,4 +791,24 @@ runs:
       cat code-coverage-results.md >> "${GITHUB_STEP_SUMMARY}"
     shell: bash
 
+  - name: Log the next step action
+    if: >-
+      always()
+      && steps.exportable-coverage-files.outputs.paths != ''
+    run: >-
+      echo ▷ Uploading coverage XML files as artifacts...
+    shell: bash
+  - name: Upload coverage XML files
+    if: >-
+      always()
+      && steps.exportable-coverage-files.outputs.paths != ''
+    uses: actions/upload-artifact@v4
+    with:
+      name: >-
+        coverage-${{ inputs.testing-type }}-${{
+          steps.compute-origin-python-version.outputs.origin-python-version
+        }}
+      path: ${{ steps.exportable-coverage-files.outputs.paths }}
+      if-no-files-found: ignore
+
 ...
