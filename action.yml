@@ -13,7 +13,7 @@ inputs:
       and https://github.com/ansible/ansible/branches/all?query=stable- for
       ideas. The repository this refers to can be changed with the
       `ansible-core-github-repository-slug` option.
-    default: stable-2.14
+    default: stable-2.21
     required: true
   ansible-core-github-repository-slug:
     description: The GitHub repository slug from which to check out ansible-core
@@ -203,6 +203,8 @@ runs:
               'stable-2.17': (3, 12),
               'stable-2.18': (3, 13),
               'stable-2.19': (3, 13),
+              'stable-2.20': (3, 14),
+              'stable-2.21': (3, 14),
           }
           python_version_fallback_for_devel = max(
               set(python_version_map.values()),
