@@ -432,7 +432,7 @@ runs:
   - name: Check out the collection
     if: >-
       !inputs.collection-src-directory
-    uses: actions/checkout@v6
+    uses: actions/checkout@v7
     with:
       path: .tmp-ansible-collection-checkout
       persist-credentials: false
