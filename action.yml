@@ -335,6 +335,17 @@ runs:
           )
           sys.exit(1)
 
+      # DEBUG: Print coverage input value
+      print(f'::notice ::DEBUG: gha_coverage input = {gha_coverage}')
+      print(
+          f'::notice ::DEBUG: gha_pull_request_branch = '
+          f'{gha_pull_request_branch}'
+      )
+      print(
+          f'::notice ::DEBUG: gha_pull_request_change_detection = '
+          f'{gha_pull_request_change_detection}'
+      )
+
       # Compose ansible-test arguments
       command = [gha_testing_type, '-v', '--color']
 
@@ -342,19 +353,35 @@ runs:
       has_change_detection = (
           gha_pull_request_branch and gha_pull_request_change_detection
       )
+      print(f'::notice ::DEBUG: has_change_detection = {has_change_detection}')
+
+      # Determine whether to generate coverage and whether to upload to codecov
+      has_coverage = gha_coverage != 'never'
+      upload_coverage_to_codecov = has_coverage
+
       if has_change_detection:
           if gha_coverage == 'auto':
               print(
-                  'Disabling coverage reporting due to pull request '
-                  'change detection being enabled.',
+                  'Disabling codecov upload due to pull request '
+                  'change detection being enabled. Coverage will still be '
+                  'generated for local use.',
               )
-              gha_coverage = 'never'
+              upload_coverage_to_codecov = False
           command.extend([
               '--changed',
               '--base-branch',
               gha_pull_request_branch,
           ])
-      has_coverage = gha_coverage != 'never'
+
+      print(
+          f'::notice ::DEBUG: has_coverage = {has_coverage} '
+          f'(gha_coverage={gha_coverage})'
+      )
+      print(
+          f'::notice ::DEBUG: upload_coverage_to_codecov = '
+          f'{upload_coverage_to_codecov}'
+      )
+
       if has_coverage:
           command.append('--coverage')
 
@@ -421,6 +448,10 @@ runs:
       set_output('command', shlex.join(command))
       set_output('has-coverage', json.dumps(has_coverage))
       set_output('has-change-detection', json.dumps(has_change_detection))
+      set_output(
+          'upload-coverage-to-codecov',
+          json.dumps(upload_coverage_to_codecov),
+      )
     shell: python
 
   - name: Log the next step action
@@ -684,6 +715,24 @@ runs:
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
+  - name: Log the next step action
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
+    run: >-
+      echo ▷ Generating a coverage report only grouped by command...
+    shell: bash
+  - name: Generate a coverage report only grouped by command
+    if: steps.ansible-test-command.outputs.has-coverage == 'true'
+    run: >-
+      set -x
+      ;
+      ~/.local/bin/ansible-test coverage xml
+      -v --requirements
+      --group-by command
+      ;
+      set +x
+    shell: bash
+    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
+
   - name: Identify a list of Cobertura XML coverage files
     if: steps.ansible-test-command.outputs.has-coverage == 'true'
     id: exportable-coverage-files
@@ -707,25 +756,9 @@ runs:
     shell: bash
 
   - name: Log the next step action
-    if: steps.ansible-test-command.outputs.has-coverage == 'true'
-    run: >-
-      echo ▷ Generating a coverage report only grouped by command...
-    shell: bash
-  - name: Generate a coverage report only grouped by command
-    if: steps.ansible-test-command.outputs.has-coverage == 'true'
-    run: >-
-      set -x
-      ;
-      ~/.local/bin/ansible-test coverage xml
-      -v --requirements
-      --group-by command
-      ;
-      set +x
-    shell: bash
-    working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
-
-  - name: Log the next step action
-    if: steps.exportable-coverage-files.outputs.paths != ''
+    if: >-
+      steps.exportable-coverage-files.outputs.paths != ''
+      && steps.ansible-test-command.outputs.upload-coverage-to-codecov == 'true'
     run: >-
       echo ▷ Sending the coverage data over to
       https://codecov.io/gh/${{ github.repository }}...
@@ -733,7 +766,9 @@ runs:
   - name: >-
       Send the coverage data over to
       https://codecov.io/gh/${{ github.repository }}
-    if: steps.exportable-coverage-files.outputs.paths != ''
+    if: >-
+      steps.exportable-coverage-files.outputs.paths != ''
+      && steps.ansible-test-command.outputs.upload-coverage-to-codecov == 'true'
     uses: codecov/codecov-action@v7.0.0
     with:
       files: ${{ steps.exportable-coverage-files.outputs.paths }}
