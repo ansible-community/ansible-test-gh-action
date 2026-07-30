@@ -53,6 +53,8 @@ jobs:
         - ''
         test-deps:
         - ''
+        test-deps-file:
+        - ''
         testing-type:
         - ''
         coverage:
@@ -128,6 +130,25 @@ jobs:
           test-deps: >-
             git+https://github.com/ansible-collections/ansible.utils.git
             git+https://github.com/ansible-collections/ansible.netcommon.git
+        - ansible-core-version: stable-2.14
+          collection-root: .internal/ansible/ansible_collections/internal/test
+          collection-src-directory: ./.tmp-action-checkout
+          coverage: auto
+          integration-continue-on-error: true
+          integration-diff: false
+          integration-retry-on-error: true
+          pre-action-cmd: >-
+            set -x;
+            mkdir -p tests/unit;
+            cp -v
+            .internal/ansible/ansible_collections/internal/test/tests/integration/targets/test/tests/requirements.yml
+            tests/unit/requirements.yml;
+            echo '=== staged file ===';
+            ls -l tests/unit/requirements.yml;
+            set +x
+          origin-python-version: '3.10'
+          testing-type: integration
+          test-deps-file: .tmp-action-checkout/tests/unit/requirements.yml
     steps:
     - name: Checkout
       uses: actions/checkout@v7
@@ -162,6 +183,7 @@ jobs:
         target-python-version: ${{ matrix.target-python-version }}
         testing-type: ${{ matrix.testing-type }}
         test-deps: ${{ matrix.test-deps }}
+        test-deps-file: ${{ matrix.test-deps-file }}
 
     - name: 📝 Log all the action outputs
       run: |

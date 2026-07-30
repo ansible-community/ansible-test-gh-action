@@ -105,7 +105,13 @@ inputs:
     description: One of 'sanity', 'units' or 'integration'
     required: true
   test-deps:
-    description: Test dependencies to install along with this collection
+    description: >-
+      Test dependencies to install along with this collection.
+      Mutually exclusive with `test-deps-file`.
+  test-deps-file:
+    description: >-
+      Path to a requirements file containing test dependencies.
+      Mutually exclusive with `test-deps`.
 outputs:
   ansible-playbook-executable:
     description: Path to the auto-installed `ansible-playbook` executable
@@ -590,23 +596,72 @@ runs:
 
   - name: Log the next step action
     run: >-
-      echo ▷ Installing collection
-      dependencies: ${{ inputs.test-deps }}
+      echo ▷ Resolving collection dependencies...
     shell: bash
-  - name: Install collection dependencies
-    # if: inputs.test-deps
-    # yamllint disable rule:line-length
-    run: >-
-      ${{
-          inputs.test-deps
-          && format(
-              'set -x; ~/.local/bin/ansible-galaxy collection install {0} -p .; set +x',
-              inputs.test-deps
+  - name: Resolve and Install Collection Dependencies
+    id: install-deps
+    env:
+      GHA_TEST_DEPS: ${{ inputs.test-deps }}
+      GHA_TEST_DEPS_FILE: ${{ inputs.test-deps-file }}
+    run: |
+      import os
+      import shlex
+      import subprocess
+      import sys
+
+      test_deps = os.environ['GHA_TEST_DEPS'].strip()
+      test_deps_file = os.environ['GHA_TEST_DEPS_FILE'].strip()
+
+      if test_deps and test_deps_file:
+          print(
+              '::error ::`test-deps` and `test-deps-file` cannot both be '
+              'supplied. Use only one of them.'
           )
-          || '>&2 echo Skipping installing the dependencies...'
-      }}
+          sys.exit(1)
+
+      command = [
+        os.path.expanduser('~/.local/bin/ansible-galaxy'),
+        'collection',
+        'install'
+      ]
+
+      if test_deps:
+          collections = shlex.split(test_deps)
+          command.extend(collections)
+      elif test_deps_file:
+          # Resolve relative to GITHUB_WORKSPACE to avoid
+          # current-working-directory shifts
+          workspace = os.environ.get('GITHUB_WORKSPACE', '.')
+          resolved_deps_file = (
+              test_deps_file if os.path.isabs(test_deps_file)
+              else os.path.join(workspace, test_deps_file)
+          )
+
+          if not os.path.exists(resolved_deps_file):
+              # Fallback: check relative to the action's current directory
+              # if workspace didn't match
+              alt_path = os.path.abspath(test_deps_file)
+              if os.path.exists(alt_path):
+                  resolved_deps_file = alt_path
+              else:
+                  print(
+                      f"::error ::File '{test_deps_file}' "
+                      f"(resolved as '{resolved_deps_file}' and '{alt_path}') "
+                      f"(not found.)"
+                  )
+                  sys.exit(1)
+
+          print(f"Reading dependencies from {resolved_deps_file}...")
+          command.extend(['-r', resolved_deps_file])
+      else:
+          print("Skipping installing the dependencies...")
+          sys.exit(0)
+
+      command.extend(['-p', '.'])
+      print(f"Running: {' '.join(command)}")
+      subprocess.run(command, check=True)
     # yamllint enable rule:line-length
-    shell: bash
+    shell: python
 
   - name: Log the next step action
     run: >-
