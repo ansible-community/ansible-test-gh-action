@@ -615,7 +615,10 @@ runs:
     # if: inputs.pre-test-cmd
     # run: ${{ inputs.pre-test-cmd }}
     run: |-
-      ${{ inputs.pre-test-cmd && 'set -x' || '>&2 echo Skipping running the pre test command...' }}
+      ${{ inputs.pre-test-cmd
+          && 'set -x'
+          || '>&2 echo Skipping the pre test cmd...'
+      }}
       ${{ inputs.pre-test-cmd }}
       ${{ inputs.pre-test-cmd && 'set +x' || '' }}
     shell: bash
