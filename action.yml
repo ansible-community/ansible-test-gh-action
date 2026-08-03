@@ -617,7 +617,7 @@ runs:
     run: >-
       ${{
           inputs.pre-test-cmd
-          && format('set -x; {0}; set +x', inputs.pre-test-cmd)
+          && format('set -x; {0}; set +x', inputs.pre-test-cmd | trim)
           || '>&2 echo Skipping running the pre test command...'
       }}
     shell: bash
