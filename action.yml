@@ -42,10 +42,6 @@ inputs:
       information except when `pull-request-change-detection` is set to `true`
       and the action is called from a Pull Request.
     default: auto
-  debug:
-    description: >-
-      Whether to show debug output for computed values.
-    default: 'false'
   docker-image:
     description: Docker image used by ansible-test
   git-checkout-ref:
@@ -273,7 +269,6 @@ runs:
       GHA_CONTAINER_NETWORK: ${{ job.container.network }}
       GHA_CONTROLLER_PYTHON_VERSION: ${{ inputs.controller-python-version }}
       GHA_COVERAGE: ${{ inputs.coverage }}
-      GHA_DEBUG: ${{ inputs.debug }}
       GHA_DOCKER_IMAGE: ${{ inputs.docker-image }}
       GHA_INTEGRATION_CONTINUE_ON_ERROR: >-
         ${{ inputs.integration-continue-on-error }}
@@ -298,11 +293,9 @@ runs:
       FILE_APPEND_MODE = 'a'
       OUTPUTS_FILE_PATH = pathlib.Path(os.environ['GITHUB_OUTPUT'])
 
-      def set_output(name, value, debug=False):
+      def set_output(name, value):
           with OUTPUTS_FILE_PATH.open(FILE_APPEND_MODE) as outputs_file:
               outputs_file.writelines(f'{name}={value}{os.linesep}')
-          if debug:
-              print(f'::notice ::DEBUG: output {name} = {value}')
 
       # Input from GHA
       gha_ansible_core_version = os.environ['GHA_ANSIBLE_CORE_VERSION']
@@ -311,7 +304,6 @@ runs:
           os.environ['GHA_CONTROLLER_PYTHON_VERSION']
       )
       gha_coverage = os.environ['GHA_COVERAGE']
-      gha_debug = json.loads(os.environ['GHA_DEBUG'])
       gha_docker_image = os.environ['GHA_DOCKER_IMAGE']
       gha_integration_continue_on_error = json.loads(
           os.environ['GHA_INTEGRATION_CONTINUE_ON_ERROR']
@@ -351,11 +343,6 @@ runs:
       has_change_detection = (
           gha_pull_request_branch and gha_pull_request_change_detection
       )
-      if gha_debug:
-          print(
-              f'::notice ::DEBUG: has_change_detection = '
-              f'{has_change_detection}'
-          )
 
       # Determine whether to generate coverage and whether to upload to codecov
       has_coverage = gha_coverage != 'never'
@@ -374,16 +361,6 @@ runs:
               '--base-branch',
               gha_pull_request_branch,
           ])
-
-      if gha_debug:
-          print(
-              f'::notice ::DEBUG: has_coverage = {has_coverage} '
-              f'(gha_coverage={gha_coverage})'
-          )
-          print(
-              f'::notice ::DEBUG: upload_coverage_to_codecov = '
-              f'{upload_coverage_to_codecov}'
-          )
 
       if has_coverage:
           command.append('--coverage')
@@ -448,19 +425,17 @@ runs:
 
       command.extend(shlex.split(gha_target))
 
-      set_output('command', shlex.join(command), debug=gha_debug)
+      set_output('command', shlex.join(command))
       set_output(
-          'has-coverage', json.dumps(has_coverage), debug=gha_debug
+          'has-coverage', json.dumps(has_coverage),
       )
       set_output(
           'has-change-detection',
           json.dumps(has_change_detection),
-          debug=gha_debug,
       )
       set_output(
           'upload-coverage-to-codecov',
           json.dumps(upload_coverage_to_codecov),
-          debug=gha_debug,
       )
     shell: python
 
