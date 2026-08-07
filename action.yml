@@ -616,12 +616,13 @@ runs:
   - name: Run a pre-test command
     # if: inputs.pre-test-cmd
     # run: ${{ inputs.pre-test-cmd }}
-    run: >-
-      ${{
-          inputs.pre-test-cmd
-          && format('set -x; {0}; set +x', inputs.pre-test-cmd)
-          || '>&2 echo Skipping running the pre test command...'
+    run: |-
+      ${{ inputs.pre-test-cmd
+          && 'set -x'
+          || '>&2 echo Skipping the pre test cmd...'
       }}
+      ${{ inputs.pre-test-cmd }}
+      ${{ inputs.pre-test-cmd && 'set +x' || '' }}
     shell: bash
     working-directory: ${{ steps.collection-metadata.outputs.checkout-path }}
 
