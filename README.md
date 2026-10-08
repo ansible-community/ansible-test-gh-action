@@ -67,6 +67,17 @@ The GitHub repository slug from which to check out ansible-core
 The Codecov token to use when uploading coverage data. **(OPTIONAL)**
 
 
+### `controller-docker-opts`
+
+Comma-separated controller docker options **(OPTIONAL)**:
+
+- `seccomp=default|unconfined`
+- `cgroup=none|v1-only|v2-only|v1-v2`
+- `audit=none|required`
+- `privileged=yes|no`
+- `memory=<integer>`
+
+
 ### `controller-python-version`
 
 Controller Python version. This is only used for integration tests and
@@ -103,6 +114,21 @@ and the action is called from a Pull Request. **(DEFAULT: `auto`)**
 ### `docker-image`
 
 A container image spawned by `ansible-test` **(OPTIONAL)**
+
+
+### `docker-memory`
+
+Memory limit for docker in bytes **(OPTIONAL)**
+
+
+### `docker-privileged`
+
+Run docker container in privileged mode **(OPTIONAL)**
+
+
+### `docker-seccomp`
+
+Set seccomp confinement for the test container (default, unconfined) **(OPTIONAL)**
 
 
 ### `git-checkout-ref`
@@ -179,6 +205,17 @@ Allow running sanity tests that are disabled by default.
 ### `target`
 
 `ansible-test` TARGET **(OPTIONAL)**
+
+
+### `target-docker-opts`
+
+Comma-separated target docker options **(OPTIONAL)**:
+
+- `seccomp=default|unconfined`
+- `cgroup=none|v1-only|v2-only|v1-v2`
+- `audit=none|required`
+- `privileged=yes|no`
+- `memory=<integer>`
 
 
 ### `target-python-version`
