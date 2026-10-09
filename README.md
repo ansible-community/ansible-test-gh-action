@@ -37,6 +37,14 @@ To use the action add the following step to your workflow file (e.g.
     test-deps: >-
       ansible.netcommon
       ansible.utils
+- name: Perform unit testing using specified dependency requirements file
+  uses: ansible-community/ansible-test-gh-action@release/v1
+  with:
+    ansible-core-version: stable-2.14
+    pre-test-cmd: echo This runs before the ansible-test invocation
+    target-python-version: 3.11
+    testing-type: units
+    test-deps-file: tests/units/requirements.yml
 ```
 
 > **Pro tip**: instead of using branch pointers, like `main`, pin
@@ -194,7 +202,12 @@ or 'integration')**
 
 ### `test-deps`
 
-Test dependencies to install along with this collection **(OPTIONAL)**
+Test dependencies to install along with this collection. Mutually exclusive with `test-deps-file` **(OPTIONAL)**
+
+
+### `test-deps-file`
+
+Path to a requirements file containing test dependencies. Mutually exclusive with `test-deps` **(OPTIONAL)**
 
 
 ## Outputs
